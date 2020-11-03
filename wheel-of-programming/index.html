@@ -1,0 +1,138 @@
+<html>
+<head>
+    <title>Wheel of Programming Chance</title>
+    <script>
+        /* check if in iframe, if NOT, redirect to the definitive page
+            and don't wait for elements to be loaded */
+        if (self.location.host == "modes.io") {
+            if( top === self ) { // not in a frame
+                location.href = "https://modes.io/wheel-of-programming/";
+            }
+        }
+    </script>
+    <link rel="icon" type="image/png" href="img/wheel-closer.png">
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+    <!-- Latest compiled and minified Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <!-- jQuery library -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+      integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+      crossorigin="anonymous"></script>
+    <!-- jQuery CSV for handling csv files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/0.71/jquery.csv-0.71.min.js"></script>
+    <!-- Popper JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <!-- Latest compiled Bootstrap JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="js/wheel.js" defer></script>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300|Yanone+Kaffeesatz:200&display=swap" rel="stylesheet">
+    <!-- for proper responsive scaling -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- META DATA -->
+    <meta name="description" content="An idea generator for programmers"> <!-- ˜150 chars -->
+    <meta property="og:title" content="Wheel of Programming Chance">
+    <meta property="og:description" content="An idea generator for programmers"> <!-- ˜300 chars -->
+    <meta property="og:site_name" content="Wheel of Programming Chance">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="http://myspace.csumb.edu/~wmodes/wheel-of-programming-Ideas/">
+    <meta property="og:image" content="http://myspace.csumb.edu/~wmodes/wheel-of-programming/img/wheel-of-chaos-sketch.png"> <!-- 200x200px - 1200x1200px -->
+</head>
+<body>
+<div class="container">
+    <main>
+        <div class="main-image">
+            <img src="img/wheel-of-chance.gif">
+        </div>
+        <section id="welcome">
+            <h1>Wheel of Programming Chance</h1>
+            <h2 class="subtitle">An idea generator for programmers</h2>
+            <p>Welcome to the <i>Wheel of Programming Chance</i>. You will be matched with the perfect programming project individually chosen for you.</p>
+        </section>
+        <section id="doc" class="hidey">
+            <p><span class="youme">You</span> need a programming project and somehow lack the imagination or the intellectual tools to come up with one yourself. You haven't heard of brainstorming or mind maps, or didn't listen when they were introduced. Or prehaps really you are a gambler, a rogue, a devil-may-care will-of-the-wisp and prefer to take your chances. In any case, you have chosen to let the fates cast the bones of fortune to see what your future has in store for you. This is not always easy. Nor is it always safe.</p>
+
+            <p><span class="youme">We</span> have ideas for you. Maybe we ourselves
+            are gamblers. Maybe we're scofflaws, vagabonds, ne'r-do-wells, troublemakers, who never pass up the chance to play the odds. Or maybe we're just authoritarian d-bags who love the idea of telling people what to do, i-dotting and t-crossing pencil-pushing bureaucrats who love to see people fill out forms in triplicate (in black or blue ink, please).</p>
+        </section>
+        <section id="committment" class="hidey">
+            <p>Before we start we are going to have to get your committment to the results. So we're not wasting our time you understand.</p>
+
+            <h2>Committment</h2>
+
+            <p>To ensure we have your committment to the process, that you understand that you will abide by the recommendations of the <i>Wheel of Programming Chance</i>, please type I AM COMMITTED in the box below:</p>
+
+            <div class="commit-p centeringblock">
+                <div>
+                    <input id="commit-input" type="text">
+                    <button id="commit-button">Commit</button>
+                </div>
+            </div>
+
+        </section>
+        <section id="intake" class="hidey invisible">
+            <h2>Intake Information</h2>
+
+            <p>But first we have to gather a little information about you.</p>
+
+            <div class="centeringblock">
+                <div>
+                    <div id="intake-error" class="errors"></div>
+                    <div class="intake-input">
+                        <input type="text" id="input-name" class="formfield"
+                            placeholder="Full Name">
+                    </div>
+                    <div class="intake-input">
+                        <input type="text" id="input-hometown" class="formfield"
+                        placeholder="Hometown">
+                    </div>
+                    <div class="intake-input">
+                        <select id="input-exp" class="formfield">
+                            <option selected disabled>Years of Programming Experience</option>
+                            <option value="0">Less than 1 year</option>
+                            <option value="1">1 to 2 years</option>
+                            <option value="2">2 to 3 years</option>
+                            <option value="3">3 to 4 years</option>
+                            <option value="4">More than 4 years</option>
+                        </select>
+                    </div>
+                    <div class="intake-input">
+                        <button id="intake-button" class="formfield">Submit
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section> 
+        <section id="loading" class="hidey invisible">
+            <h2>Searching for Level <span id="loading-level"></span> Program</h2>
+            <div class="centeringblock">
+                <div class="loading-graphic"></div>
+                <div class="loading-window"></div>
+            </div>
+        </section>
+        <section id="results" class="hidey invisible">
+            <p>The following project was selected for <span id="results-name"></span> 
+            (_id: <span id="results-id"></span>) on 
+            <span id="results-date"></span>:</p>
+            <h1 id="results-title"></h1>
+            <h3>Big Idea/How It Works</h3>
+            <p id="results-desc"></p>
+            <h3>Open Questions</h3>
+            <p id="results-ques"></p>
+            <h3>Difficulty Level</h3>
+            <p id="results-level"></p>
+            <div id="again"><button id="again-button">Try Again</button></div>
+        </section>
+        <section id="badideas">
+            If you have an idea for a bad, outrageous, interesting, challenging, and completely wrong idea for a programming project, we need you to submit that at the <a href="https://forms.gle/2MtdNPoKFh7HpX4A9" target=_blank>Wheel of Programming Chance Bad Idea Submission form</a>.
+        </section>
+    </main>
+    <footer>
+        <div class="credits">
+            Created by <a href="http://modes.io">Wes Modes</a>.<br>
+            Illustration by <a href="http://benzy.art">SL Benz</a>.
+        </div>
+    </footer>
+</div>
+</body>
+</html>
+

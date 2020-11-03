@@ -1,0 +1,39 @@
+
+.lyricsbox {
+    display: inline-block;
+    border: solid 1px grey;
+    paddding: 30px;
+    display: flex;
+    flex-direction: column; 
+    margin: 20px auto 20px auto;
+    width: 500px;
+}
+
+.titlebox {
+    padding: 20px;
+    border-bottom: solid 1px grey;
+    margin: 0;
+    border-spacing: 0;
+}
+
+.lyrics {
+    unicode-bidi: embed;
+    /*font-family: monospace;*/
+    white-space: pre;
+}
+
+.container:hover {
+    animation-name: spin;
+    animation-duration: 2000ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+@keyframes spin {
+    from {
+        transform:rotate(0deg);
+    }
+    to {
+        transform:rotate(360deg);
+    }
+}
