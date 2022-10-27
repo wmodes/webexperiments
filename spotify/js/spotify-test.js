@@ -14,7 +14,7 @@ console.log("Access token:", accessToken);
 
 var spotifyApi = new SpotifyWebApi();
 spotifyApi.setAccessToken(accessToken);
-spotifyApi.setPromiseImplementation(Q);
+// spotifyApi.setPromiseImplementation(Q);
 
 spotifyApi.getArtistAlbums('43ZHCT0cAZBISjO8DG9PnE', function (err, data) {
   if (err) console.error(err);
