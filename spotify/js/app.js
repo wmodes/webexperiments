@@ -37,7 +37,8 @@ function showAlbums(data) {
     var albumImageURL = albumList[i].images[0];
     var albumHTML =
       "<img src='" + albumImageURL + "'>" +
-      "<h3>" + albumName + "</h3>"
+      "<h3>" + albumName + "</h3>";
     var newAlbum = $("<div></div>").html(albumHTML);
+    $("#albums").append(newAlbum);
   }
 }
