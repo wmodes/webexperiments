@@ -1,0 +1,161 @@
+
+:root {
+    --totalCycleTime: 100s;  /* Speed across page will be 1/5th this time */
+    --delayFactor: 100s;
+    --delay0: 0;
+    --delay1: 94;
+    --delay2: 10;
+    --delay3: 52;
+    --delay4: 25;
+    --delay5: 76;
+    --delay6: 15;
+    --delay7: 28;
+    --delay8: 39;
+    --delay9: 54;
+    --delay10: 64;
+    --delay11: 78;
+    --delay12: 90;
+    --delay13: 82;
+    --delay14: 9;
+    --delay15: 13;
+    --delay16: 69;
+    --delay17: 27;
+    --delay18: 32;
+    --delay19: 40;
+    --delay20: 45;
+    --delay21: 57;
+    --delay22: 66;
+    --delay23: 70;
+}
+
+/* 
+    I did use a bit of python to generate random delays:
+
+    def numbers(first, last, count):
+        nums = [first, last]
+        width = last - first
+        while len(nums) < count:
+            width /= 2
+            stepper = first
+            while stepper < last:
+                rounded = round(stepper + (random.random() * ((last-first)/count)))
+                if rounded not in nums:
+                    nums.append(rounded)
+                    if len(nums) == count:
+                        break
+                stepper += width
+        return nums
+    s = numbers(0,100,24)
+    for i in range(24):
+        print ("--delay" + str(i) + ": " + str(s[i]) + ";")
+*/
+
+html, body, .container {
+    overflow: hidden;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+
+    background-color: #049cd8;
+    /*width: 100vw;*/
+}
+
+.container {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    width: 100%;
+    /*border: solid 1px red;*/
+}
+
+.row {
+    height: 9vh;
+    width: 100%;
+    /*border: solid 1px black;*/
+    margin: 0;
+    paddding: 0;
+}
+
+.explainer {
+    text-align: center;
+    color: white;
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    opacity: 0;
+    transition: opacity 2s;
+}
+
+.row11:hover .explainer {
+    opacity: 0.8;
+}
+
+.cloud {
+    visibility: hidden;
+    position: absolute;
+    left: 0;
+    height: 9vh;
+    width: auto;
+    transform: translate(-100%,0);
+    animation-duration: var(--totalCycleTime);
+    animation-name: goLeft;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+.cloud-b {
+    margin-top: 5vh;
+    /*transform: translate(0,5vh);*/
+}
+
+/*.row1 .cloud-a { animation-delay: calc(var(--delay0)/100 * var(--delayFactor)); }
+.row1 .cloud-b { animation-delay: calc(var(--delay0)/100 * var(--delayFactor)); }
+.row1 .cloud-c { animation-delay: calc(var(--delay0)/100 * var(--delayFactor)); }*/
+
+.row2 .cloud-a { animation-delay: calc(var(--delay0)/100 * var(--delayFactor)); }
+.row2 .cloud-b { animation-delay: calc(var(--delay1)/100 * var(--delayFactor)); }
+.row2 .cloud-c { animation-delay: calc(var(--delay2)/100 * var(--delayFactor)); }
+
+.row3 .cloud-a { animation-delay: calc(var(--delay3)/100 * var(--delayFactor)); }
+.row3 .cloud-b { animation-delay: calc(var(--delay4)/100 * var(--delayFactor)); }
+.row3 .cloud-c { animation-delay: calc(var(--delay5)/100 * var(--delayFactor)); }
+
+.row4 .cloud-a { animation-delay: calc(var(--delay6)/100 * var(--delayFactor)); }
+.row4 .cloud-b { animation-delay: calc(var(--delay7)/100 * var(--delayFactor)); }
+.row4 .cloud-c { animation-delay: calc(var(--delay8)/100 * var(--delayFactor)); }
+
+.row5 .cloud-a { animation-delay: calc(var(--delay9)/100 * var(--delayFactor)); }
+.row5 .cloud-b { animation-delay: calc(var(--delay10)/100 * var(--delayFactor)); }
+.row5 .cloud-c { animation-delay: calc(var(--delay11)/100 * var(--delayFactor)); }
+
+.row6 .cloud-a { animation-delay: calc(var(--delay12)/100 * var(--delayFactor)); }
+.row6 .cloud-b { animation-delay: calc(var(--delay13)/100 * var(--delayFactor)); }
+.row6 .cloud-c { animation-delay: calc(var(--delay14)/100 * var(--delayFactor)); }
+
+.row7 .cloud-a { animation-delay: calc(var(--delay15)/100 * var(--delayFactor)); }
+.row7 .cloud-b { animation-delay: calc(var(--delay16)/100 * var(--delayFactor)); }
+.row7 .cloud-c { animation-delay: calc(var(--delay17)/100 * var(--delayFactor)); }
+
+.row8 .cloud-a { animation-delay: calc(var(--delay18)/100 * var(--delayFactor)); }
+.row8 .cloud-b { animation-delay: calc(var(--delay19)/100 * var(--delayFactor)); }
+.row8 .cloud-c { animation-delay: calc(var(--delay20)/100 * var(--delayFactor)); }
+
+.row9 .cloud-a { animation-delay: calc(var(--delay21)/100 * var(--delayFactor)); }
+.row9 .cloud-b { animation-delay: calc(var(--delay22)/100 * var(--delayFactor)); }
+.row9 .cloud-c { animation-delay: calc(var(--delay23)/100 * var(--delayFactor)); }
+
+@keyframes goLeft {
+    0% {
+        transform: translate(110vw,0);
+        visibility: visible;
+    }
+    20% {
+        transform: translate(-100%,0);
+        visibility: hidden;
+    } 
+    100% {
+        transform: translate(-100%,0);
+    }
+}
