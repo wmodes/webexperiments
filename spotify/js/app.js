@@ -29,6 +29,11 @@ spotifyApi.getArtistAlbums('43ZHCT0cAZBISjO8DG9PnE').then(
 
 function showAlbums(data) {
   // console.log("array:", data.items);
+  albumList = data.items;
   $("#albums").html("Album data: <pre>",
-  JSON.stringify(data.items, null, '\t'), "</pre>");
+  JSON.stringify(albumList, null, '\t'), "</pre>");
+  for (i=0;i<albumList.length;i++) {
+    var newAlbum = $("#albums").append("<div>");
+    newAlbum.append("<h2>" + albumList[i].name);
+  }
 }
