@@ -5,7 +5,7 @@
 }
 
 #albums>* {
-  width: 400px;
-  height: 400px;
+  width: 300px;
+  height: 300px;
   border: solid 1px gray;
 }
