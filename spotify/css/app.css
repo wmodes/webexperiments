@@ -15,3 +15,7 @@ body {
   height: 300px;
   border: solid 1px gray;
 }
+
+#albums img {
+  width: 100%;
+}
