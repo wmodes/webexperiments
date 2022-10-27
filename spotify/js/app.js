@@ -31,10 +31,9 @@ function showAlbums(data) {
   // console.log("array:", data.items);
   albumList = data.items;
   console.log("albumList:", albumList)
-  $("#albums").html("Album data: <pre>",
-  JSON.stringify(albumList, null, '\t'), "</pre>");
+  // $("#albums").html("Album data: <pre>", JSON.stringify(albumList, null, '\t'), "</pre>");
   for (i=0;i<albumList.length;i++) {
     var newAlbum = $("#albums").append("<div>");
-    newAlbum.append("<h2>" + albumList[i].name);
+    newAlbum.append("<h3>" + albumList[i].name);
   }
 }
