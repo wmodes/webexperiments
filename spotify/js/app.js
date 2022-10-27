@@ -19,7 +19,7 @@ spotifyApi.setAccessToken(accessToken);
 // get Elvis' albums, using Promises through Promise, Q or when
 spotifyApi.getArtistAlbums('43ZHCT0cAZBISjO8DG9PnE').then(
   function (data) {
-    // console.log('Artist albums:', data);
+    console.log('Artist albums:', data);
     showAlbums(data);
   },
   function (err) {
@@ -33,9 +33,9 @@ function showAlbums(data) {
   // console.log("albumList:", albumList)
   // $("#albums").html("Album data: <pre>", JSON.stringify(albumList, null, '\t'), "</pre>");
   for (i=0;i<albumList.length;i++) {
-    var albumHTML = 
-      "<h3>" + albumList[i].name + "</h3>" +
-      "
+    var albumHTML =
+      "<img src=" + albumList[i].name + ">" +
+      "<h3>" + albumList[i].name + "</h3>"
     var newAlbum = $("<div></div>").html();
   }
 }
