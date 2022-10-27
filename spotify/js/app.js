@@ -34,7 +34,7 @@ function showAlbums(data) {
   // $("#albums").html("Album data: <pre>", JSON.stringify(albumList, null, '\t'), "</pre>");
   for (i=0;i<albumList.length;i++) {
     var albumName = albumList[i].name;
-    var albumImageURL = albumList[i].iamges[0];
+    var albumImageURL = albumList[i].images[0];
     var albumHTML =
       "<img src='" + albumImageURL + "'>" +
       "<h3>" + albumName + "</h3>"
