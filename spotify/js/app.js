@@ -38,6 +38,6 @@ function showAlbums(data) {
     var albumHTML =
       "<img src='" + albumImageURL + "'>" +
       "<h3>" + albumName + "</h3>"
-    var newAlbum = $("<div></div>").html();
+    var newAlbum = $("<div></div>").html(albumHTML);
   }
 }
