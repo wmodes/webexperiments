@@ -36,7 +36,7 @@ function showAlbums(data) {
     var albumName = albumList[i].name;
     var albumImageURL = albumList[i].iamges[0];
     var albumHTML =
-      "<img src=" + albumImageURL + ">" +
+      "<img src='" + albumImageURL + "'>" +
       "<h3>" + albumName + "</h3>"
     var newAlbum = $("<div></div>").html();
   }
