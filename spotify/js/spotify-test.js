@@ -13,7 +13,7 @@ var accessToken = $.urlParam('access_token');
 console.log("Access token:", accessToken);
 
 var spotifyApi = new SpotifyWebApi();
-spotifyApi.setAccessToken('accessToken');
+spotifyApi.setAccessToken(accessToken);
 spotifyApi.setPromiseImplementation(Q);
 
 spotifyApi.getArtistAlbums('43ZHCT0cAZBISjO8DG9PnE', function (err, data) {
