@@ -1,4 +1,10 @@
 
+body {
+  background-color: #202020;
+  color: #FFFFFF;
+  font-family: :"Helvetica Neue", helvetica, arial, "Hiragino Kaku Gothic Pro", Meiryo, "MS Gothic";
+}
+
 #albums {
   display: flex;
   flex-wrap: wrap;
