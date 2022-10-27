@@ -20,6 +20,7 @@ spotifyApi.setAccessToken(accessToken);
 spotifyApi.getArtistAlbums('43ZHCT0cAZBISjO8DG9PnE').then(
   function (data) {
     console.log('Artist albums:', data);
+    showAlbums(data);
   },
   function (err) {
     console.error(err);
