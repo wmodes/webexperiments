@@ -1,21 +1,99 @@
 
 body {
-  background-color: #202020;
+  background-color: #101010;
   color: #FFFFFF;
   font-family: "Helvetica Neue", helvetica, arial, "Hiragino Kaku Gothic Pro", Meiryo, "MS Gothic";
 }
 
+#content {
+  padding: 24px;
+}
+
 #albums {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-gap: 24px;
+  grid-template-columns: repeat(4,minmax(0,1fr));
 }
 
-#albums>* {
-  width: 300px;
-  height: 300px;
-  border: solid 1px gray;
-}
-
-#albums img {
+#albums>album {
+  -webkit-box-flex: 1;
+  background: #181818;
+  -ms-flex: 1;
+  flex: 1;
+  isolation: isolate;
+  padding: 16px;
+  position: relative;
+  -webkit-transition: background-color .3s ease;
+  transition: background-color .3s ease;
   width: 100%;
+}
+
+.album:hover {
+  background: #282828;
+}
+
+.album {
+  padding: 16px;
+  transition: all 0.5s;
+}
+
+.album:hover {
+  background: #282828;
+}
+
+.album .image {
+  position: relative;
+}
+
+.album img {
+  width: 100%;
+}
+
+.album .name {
+  font-size: 1rem;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.album .more {
+  margin-top: 10px;
+  font-size: 0.875rem;
+  color: #b3b3b3;
+  font-weight: 400;
+}
+
+.album button {
+  opacity: 0;
+  pointer-events: auto;
+  position: absolute;
+  right: 8px;
+  bottom: 0;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  vertical-align: baseline;
+  z-index: 1;
+  background-color: #1ed760;
+  color: #000;
+  border-radius: 500px;
+  min-block-size: 48px;
+  -webkit-box-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  justify-content: center;
+  inline-size: 48px;
+  block-size: 48px;
+  transition: all 0.5s;
+}
+
+.album:hover button {
+  opacity: 1;
+  bottom: 8px;
+}
+
+.album button:hover {
+  background-color: #1fdf64;
+  transform: scale(1.04);
 }
