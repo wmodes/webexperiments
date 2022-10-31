@@ -49,7 +49,9 @@ function showAlbums(data) {
         "<span class='artist'>" + albumArtist + "</span>" +
       "</div>";
     var newAlbum = $("<div class='album'></div>").html(albumHTML);
-    $("#albums").append(newAlbum);
+    $("#album-list").append(newAlbum);
+    var newAlbum = $("<div class='album'></div>").html(albumHTML);
+    $("#album-list").append(newAlbum);
   }
 }
 
