@@ -1,21 +1,149 @@
 
-body {
+:root {
+  --background-noise: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJhIiB4PSIwIiB5PSIwIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iLjc1IiBzdGl0Y2hUaWxlcz0ic3RpdGNoIi8+PGZlQ29sb3JNYXRyaXggdHlwZT0ic2F0dXJhdGUiIHZhbHVlcz0iMCIvPjwvZmlsdGVyPjxwYXRoIGZpbHRlcj0idXJsKCNhKSIgb3BhY2l0eT0iLjA1IiBkPSJNMCAwaDMwMHYzMDBIMHoiLz48L3N2Zz4=);
+  --buddy-feed-width: 270px;
+  --scrollbar-vertical-size: 16px;
+  --scrollbar-horizontal-size: 16px;
+  --nav-bar-width: 232px;
+  --background-base: #121212;
+  --background-highlight: #1a1a1a;
+  --background-press: #000;
+  --background-elevated-base: #242424;
+  --background-elevated-highlight: #2a2a2a;
+  --background-elevated-press: #000;
+  --background-tinted-base: hsla(0,0%,100%,.07);
+  --background-tinted-highlight: hsla(0,0%,100%,.1);
+  --background-tinted-press: hsla(0,0%,100%,.04);
+  --background-unsafe-for-small-text-base: #121212;
+  --background-unsafe-for-small-text-highlight: #121212;
+  --background-unsafe-for-small-text-press: #121212;
+  --text-base: #fff;
+  --text-subdued: #a7a7a7;
+  --text-bright-accent: #1ed760;
+  --text-negative: #f15e6c;
+  --text-warning: #ffa42b;
+  --text-positive: #1ed760;
+  --text-announcement: #3d91f4;
+  --essential-base: #fff;
+  --essential-subdued: #727272;
+  --essential-bright-accent: #1ed760;
+  --essential-negative: #e91429;
+  --essential-warning: #ffa42b;
+  --essential-positive: #1ed760;
+  --essential-announcement: #0d72ea;
+  --decorative-base: #fff;
+  --decorative-subdued: #292929;
+}
+
+body, #content {
+  position: relative;
   background-color: #101010;
   color: #FFFFFF;
   font-family: "Helvetica Neue", helvetica, arial, "Hiragino Kaku Gothic Pro", Meiryo, "MS Gothic";
+  margin: 0;
+  padding: 0;
+}
+
+/*
+ * MAIN PANELS
+ */
+
+div, nav {
+  border: solid 1px gray;
+}
+
+#content, #top-panel, #player-panel {
+  position: fixed;
+  overflow: hidden;
 }
 
 #content {
-  padding: 24px;
+  /* width: 100%; */
+  /* height: 100vw; */
 }
 
-#albums {
+#top-panel {
+  /* height: calc(100vh - 100px); */
+  /* width: 100%; */
+  display: flex;
+  flex-wrap: nowrap;
+  z-index: 1;
+}
+
+#player-panel {
+  position: fixed;
+  bottom: 0;
+  height: 100px;
+  width: 100%;
+  border: solid 1px red;
+  z-index: 4;
+  background-color: #000;
+}
+
+#main-area1 {
+  width: calc(var(--nav-bar-width) + 9px);
+  min-width: calc(var(--nav-bar-width) + 9px);
+  z-index: 3;
+  background-color: #000;
+}
+
+#nav-panel, #fave-panel {
+  padding: 16px;
+}
+
+#main-area2 {
+  z-index: 1;
+  background-color: #101010;
+}
+
+#control-panel {
+  position: fixed;
+  top: 0;
+  /* width: 100%; */
+  height: 64px;
+  min-width: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+#info-panel {
+  margin-top: 64px;
+}
+
+/*
+ * INFO WINDOWS
+ */
+
+
+#albums-window, #detail-window {
+  /* width: 100%; */
+  margin: 0;
+  padding: 24px;
+  overflow: auto;
+}
+
+/*
+ * NAVIGATION PANEL
+ */
+
+.spotify-vinyl-logo {
+  height: 60px;
+  max-width: 145px;
+  width: 100%;
+}
+
+/*
+ * ALBUM SELECTION
+ */
+
+
+#album-list {
   display: grid;
   grid-gap: 24px;
   grid-template-columns: repeat(4,minmax(0,1fr));
 }
 
-#albums>album {
+#album-list>.album {
   -webkit-box-flex: 1;
   background: #181818;
   -ms-flex: 1;
@@ -25,31 +153,31 @@ body {
   position: relative;
   -webkit-transition: background-color .3s ease;
   transition: background-color .3s ease;
-  width: 100%;
 }
 
-.album:hover {
+#album-list>.album:hover {
   background: #282828;
 }
 
-.album {
+#album-list>.album {
   padding: 16px;
   transition: all 0.5s;
 }
 
-.album:hover {
+#album-list>.album:hover {
   background: #282828;
 }
 
-.album .image {
+#album-list>.album .image {
   position: relative;
-}
-
-.album img {
   width: 100%;
 }
 
-.album .name {
+#album-list>.album img {
+  width: 100%;
+}
+
+#album-list>.album .name {
   font-size: 1rem;
   font-weight: 700;
   overflow: hidden;
@@ -57,14 +185,14 @@ body {
   white-space: nowrap;
 }
 
-.album .more {
+#album-list>.album .more {
   margin-top: 10px;
   font-size: 0.875rem;
   color: #b3b3b3;
   font-weight: 400;
 }
 
-.album button {
+#album-list>.album button {
   opacity: 0;
   pointer-events: auto;
   position: absolute;
@@ -88,12 +216,184 @@ body {
   transition: all 0.5s;
 }
 
-.album:hover button {
+#album-list>.album:hover button {
   opacity: 1;
   bottom: 8px;
 }
 
-.album button:hover {
+#album-list>.album button:hover {
   background-color: #1fdf64;
   transform: scale(1.04);
+}
+
+/*
+ * ALBUM DETAILS
+ */
+
+#detail-window {
+  display: none;
+  opacity: 0;
+  background-color: rgb(184, 168, 112);
+  transition: all 0.5s;
+}
+
+#detail-window .header {
+  height: 30vh;
+  width: 100%;
+  max-height: 500px;
+  min-height: 340px;
+  color: #fff;
+  max-width: none;
+  overflow: hidden;
+  padding-bottom: 24px;
+  margin: 0;
+  position: relative;
+  background: linear-gradient(transparent 0,rgba(0,0,0,.5) 100%)
+}
+
+#detail-window .controls {
+  padding: 16px 32px;
+  padding-inline-end: 32px;
+  align-items: center;
+  display: flex;
+  gap: 16px;
+  height: 64px;
+  justify-content: space-between;
+  padding: 16px;
+  padding-inline-end: 16px;
+  position: relative;
+  width: 100%;
+  z-index: 10;
+}
+
+#detail-window .controls .close {
+  align-items: center;
+  background-color: rgba(0,0,0,.7);
+  border: none;
+  border-radius: 50%;
+  color: #fff;
+  cursor: pointer;
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  height: 32px;
+  justify-content: center;
+  position: relative;
+  width: 32px;
+  opacity: 1;
+  fill: currentcolor;
+}
+
+#detail-window .album-info {
+  padding: 16px;
+  color: #fff;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  align-items: flex-end;
+  max-width: none;
+  overflow: hidden;
+  padding-bottom: 24px;
+  position: relative;
+}
+
+#detail-window .album-info .image {
+  height: 192px;
+  width: 192px;
+  z-index: 0;
+  margin-right: 24px;
+    border: solid 1px white;
+}
+
+#detail-window .album-info .type {
+  font-weight: 700;
+  font-size: .75rem;
+  margin-top: 4px;
+  text-transform: uppercase;
+    border: solid 1px white;
+}
+
+#detail-window .album-info .name {
+  line-height: normal;
+  margin-top: 8px;
+  overflow: hidden;
+  text-align: left;
+  width: 100%;
+  word-break: break-word;
+  margin: 0.08em 0px 0.12em;
+  width: 100%;
+  font-size: 4.5rem;
+  margin-block: 0px;
+  font-weight: 900;
+    border: solid 1px white;
+}
+
+#detail-window .album-info .more {
+  border: solid 1px white;
+}
+
+#detail-window .song-details {
+  background-image: linear-gradient(rgba(0,0,0,.6) 0,100%,);
+}
+
+#detail-window .details-header {
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-box-align: start;
+  -ms-flex-align: start;
+  align-items: flex-start;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  padding: 0 32px;
+  padding-bottom: 24px;
+  padding-top: 24px;
+  position: relative;
+}
+
+#detail-window .details-header button.play {
+  box-sizing: border-box;
+  font-size: 1.125rem;
+  font-weight: 700;
+  background-color: transparent;
+  border: 0px;
+  border-radius: 500px;
+  display: inline-block;
+  position: relative;
+  text-align: center;
+  text-decoration: none;
+  text-transform: none;
+  touch-action: manipulation;
+  transition-duration: 33ms;
+  transition-property: background-color, border-color, color, box-shadow, filter, transform;
+  user-select: none;
+  vertical-align: middle;
+  transform: translate3d(0px, 0px, 0px);
+  padding: 0px;
+  min-inline-size: 0px;
+  align-self: center;
+}
+
+#detail-window .details-header .button-wrap .symbol-wrap1 {
+  box-sizing: border-box;
+  position: relative;
+  background-color: #1ed760;
+  color: #000000;
+  display: flex;
+  border-radius: 500px;
+  font-size: inherit;
+  min-block-size: 56px;
+  align-items: center;
+  justify-content: center;
+  inline-size: 56px;
+  block-size: 56px;
+}
+
+#detail-window .details-header .button-wrap .symbol-wrap2 {
+  display: flex;
+  position: absolute;
+  top: 14px;
+  left: 14px;
 }
