@@ -397,3 +397,37 @@ div, nav {
   top: 14px;
   left: 14px;
 }
+
+.search-bar {
+  webkit-box-flex: 0;
+  -ms-flex: 0 1 364px;
+  flex: 0 1 364px;
+  position: relative;
+  -webkit-app-region: no-drag;
+  pointer-events: auto;
+}
+
+.search-bar form {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  vertical-align: baseline;
+}
+
+.search-bar input {
+  background-color: #242424;
+  border: 0;
+  border-radius: 500px;
+  color: #fff!important;
+  height: 48px;
+  padding: 6px 36px;
+  text-overflow: ellipsis;
+  width: 100%;
+  font-size: 0.875rem;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  margin-block: 0px;
+  font-weight: 400;
+  font-family: var(--font-family,CircularSp,CircularSp-Arab,CircularSp-Hebr,CircularSp-Cyrl,CircularSp-Grek,CircularSp-Deva,var(--fallback-fonts,sans-serif));
+  text-transform: none;
+}

@@ -1,12 +1,7 @@
-
-(function() {
+$(document).ready(function() {
 
   var stateKey = 'spotify_auth_state';
 
-  /**
-   * Obtains parameters from the hash of the URL
-   * @return Object
-   */
   function getHashParams() {
     var hashParams = {};
     var e, r = /([^&;=]+)=?([^&;]*)/g,
@@ -17,11 +12,6 @@
     return hashParams;
   }
 
-  /**
-   * Generates a random string containing numbers and letters
-   * @param  {number} length The length of the string
-   * @return {string} The generated string
-   */
   function generateRandomString(length) {
     var text = '';
     var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -30,15 +20,15 @@
       text += possible.charAt(Math.floor(Math.random() * possible.length));
     }
     return text;
-  };
+  }
 
-  var userProfileSource = document.getElementById('user-profile-template').innerHTML,
+  var userProfileSource = $('#user-profile-template').html(),
       userProfileTemplate = Handlebars.compile(userProfileSource),
-      userProfilePlaceholder = document.getElementById('user-profile');
+      userProfilePlaceholder = $('#user-profile');
 
-      oauthSource = document.getElementById('oauth-template').innerHTML,
+  var oauthSource = $('#oauth-template').html(),
       oauthTemplate = Handlebars.compile(oauthSource),
-      oauthPlaceholder = document.getElementById('oauth');
+      oauthPlaceholder = $('#oauth');
 
   var params = getHashParams();
 
@@ -57,7 +47,7 @@
             'Authorization': 'Bearer ' + access_token
           },
           success: function(response) {
-            userProfilePlaceholder.innerHTML = userProfileTemplate(response);
+            userProfilePlaceholder.html(userProfileTemplate(response));
 
             $('#login').hide();
             $('#loggedin').show();
@@ -68,7 +58,7 @@
         $('#loggedin').hide();
     }
 
-    document.getElementById('login-button').addEventListener('click', function() {
+    $('#login-button').on('click', function() {
 
       var client_id = '873252498aa44a53a6e33c34d8b391b9'; // Your client id
       var redirect_uri = 'https://wmodes.github.io/webexperiments/spotify/app.html'; // Your redirect uri
@@ -84,10 +74,8 @@
       url += '&scope=' + encodeURIComponent(scope);
       url += '&redirect_uri=' + encodeURIComponent(redirect_uri);
       url += '&state=' + encodeURIComponent(state);
-      console.log("url:", url)
-
 
       window.location = url;
-    }, false);
+    });
   }
-})();
+});
