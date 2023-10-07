@@ -3,6 +3,7 @@ const spotifySearchEndpoint = 'https://api.spotify.com/v1/search';
 const spotifyAlbumEndpoint = 'https://api.spotify.com/v1/albums/';
 
 // Global variables to track playlist and current song index
+let albumImageURL = '';
 let playlist = [];
 let currentSongIndex = 0;
 
@@ -152,11 +153,6 @@ function playAlbum(albumId) {
     playlist = [];
 
   // Use the Spotify API to fetch the album tracks and play them
-  // Replace this code with your actual Spotify API request
-  // Once you have the tracks, you can use the audio player to play them
-  // For example, you can populate a playlist with the album tracks and play them in order
-  // Make sure to handle any authentication or rate limiting requirements of the Spotify API
-  // Here, I'm providing a placeholder URL as an example
   var albumTracksUrl = spotifyAlbumEndpoint + albumId + '/tracks';
   
   // Fetch the album tracks from the Spotify API
@@ -166,6 +162,9 @@ function playAlbum(albumId) {
       'Authorization': `Bearer ${accessToken}`,
     },
     success: function (response) {
+      // Handle the successful response here and store the album image URL
+      albumImageURL = albumData.images[0].url;
+      
       // Handle the successful response here and play the tracks
       console.log(response.items);
 
