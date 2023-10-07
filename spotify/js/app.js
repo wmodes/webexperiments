@@ -6,9 +6,9 @@ const spotifyAlbumEndpoint = 'https://api.spotify.com/v1/albums/';
 let albumImageURL = '';
 let playlist = [];
 let currentSongIndex = 0;
-
-// Create an Audio element for the player
-const audioPlayer = new Audio();
+let spotifyCallback = null;
+let spotifyIframeAPI = null;
+let spotifyEmbedController = null;
 
 //
 // Access Token
@@ -52,50 +52,6 @@ $.urlParam = function(name){
     }
     return decodeURI(results[1]) || 0;
 }
-
-//
-// Display Albums
-//
-
-function showAlbums(data) {
-  // Clear existing albums
-  $("#album-list").empty();
-
-  var albumList = data.items;
-  for (var i = 0; i < albumList.length; i++) {
-    var albumName = albumList[i].name;
-    var albumImageURL = albumList[i].images[0].url;
-    var albumYear = albumList[i].release_date.slice(0, 4);
-    var albumArtist = albumList[i].artists[0].name;
-    var albumId = albumList[i].id; // Spotify album ID
-
-    // Create a unique ID for the play button
-    var playButtonId = 'play-button-' + i;
-
-    var buttonSVG = '<svg role="img" height="24" width="24" viewBox="0 0 24 24" class="Svg-ytk21e-0 eqtHWV"><path d="M7.05 3.606l13.49 7.788a.7.7 0 010 1.212L7.05 20.394A.7.7 0 016 19.788V4.212a.7.7 0 011.05-.606z"></path></svg>';
-    var albumHTML =
-      "<div class='image'>" +
-      "<img src='" + albumImageURL + "'>" +
-      "<button class='play-button' id='" + playButtonId + "' data-album-id='" + albumId + "'>" + buttonSVG + "</button>" +
-      "</div>" +
-      "<div class='name'>" + albumName + "</div>" +
-      "<div class='more'>" +
-      "<time class='year'>" + albumYear + "</time>" + " • " +
-      "<span class='artist'>" + albumArtist + "</span>" +
-      "</div>";
-    var newAlbum = $("<div class='album'></div>").html(albumHTML);
-    $("#album-list").append(newAlbum);
-
-    // Add a click event listener to the play button
-    $("#" + playButtonId).on('click', function () {
-      var albumId = $(this).data('album-id');
-      playAlbum(albumId);
-    });
-  }
-}
-
-
-// showAlbums(testData);
 
 //
 // Search
@@ -144,17 +100,62 @@ $('.search-field').keyup(function (event) {
 });
 
 //
+// Display Albums
+//
+
+function showAlbums(data) {
+  // Clear existing albums
+  $("#album-list").empty();
+
+  var albumList = data.items;
+  for (var i = 0; i < albumList.length; i++) {
+    var albumName = albumList[i].name;
+    var albumImageURL = albumList[i].images[0].url;
+    var albumYear = albumList[i].release_date.slice(0, 4);
+    var albumArtist = albumList[i].artists[0].name;
+    var albumId = albumList[i].id; // Spotify album ID
+
+    // Create a unique ID for the play button
+    var playButtonId = 'play-button-' + i;
+
+    var buttonSVG = '<svg role="img" height="24" width="24" viewBox="0 0 24 24" class="Svg-ytk21e-0 eqtHWV"><path d="M7.05 3.606l13.49 7.788a.7.7 0 010 1.212L7.05 20.394A.7.7 0 016 19.788V4.212a.7.7 0 011.05-.606z"></path></svg>';
+    var albumHTML =
+      "<div class='image'>" +
+      "<img src='" + albumImageURL + "'>" +
+      "<button class='play-button' id='" + playButtonId + 
+        "' data-album-id='" + albumId + 
+        "' data-album-image='" + albumImageURL + "'>" + 
+        buttonSVG + "</button>" +
+      "</div>" +
+      "<div class='name'>" + albumName + "</div>" +
+      "<div class='more'>" +
+      "<time class='year'>" + albumYear + "</time>" + " • " +
+      "<span class='artist'>" + albumArtist + "</span>" +
+      "</div>";
+    var newAlbum = $("<div class='album'></div>").html(albumHTML);
+    $("#album-list").append(newAlbum);
+
+    // Add a click event listener to the play button
+    $("#" + playButtonId).on('click', function () {
+      var albumId = $(this).data('album-id');
+      var albumImageURL = $(this).data('album-image');
+      playAlbum(albumId, albumImageURL);
+    });
+  }
+}
+
+//
 // Player
 //
 
 // Function to play an album by its Spotify ID
-function playAlbum(albumId) {
-    // Clear the playlist to start with an empty queue
-    playlist = [];
+function playAlbum(albumId, albumImageURL) {
+  // Clear the playlist to start with an empty queue
+  playlist = [];
 
   // Use the Spotify API to fetch the album tracks and play them
   var albumTracksUrl = spotifyAlbumEndpoint + albumId + '/tracks';
-  
+
   // Fetch the album tracks from the Spotify API
   $.ajax({
     url: albumTracksUrl,
@@ -163,8 +164,8 @@ function playAlbum(albumId) {
     },
     success: function (response) {
       // Handle the successful response here and store the album image URL
-      albumImageURL = albumData.images[0].url;
-      
+      console.log("Album Image URL:", albumImageURL);
+
       // Handle the successful response here and play the tracks
       console.log(response.items);
 
@@ -174,10 +175,10 @@ function playAlbum(albumId) {
         playlist.push({
           title: track.name,
           artist: track.artists[0].name,
-          url: track.preview_url, // Assuming the Spotify API provides preview URLs
+          uri: track.uri, // Spotify track URL
         });
       }
-      playPlaylist()
+      playPlaylist();
 
       // Use your audio player to play the playlist
       // Example: audioPlayer.playPlaylist(playlist);
@@ -189,28 +190,76 @@ function playAlbum(albumId) {
   });
 }
 
+// Function to play the playlist
+function playPlaylist() {
+  currentSongIndex = 0; // Start from the beginning
+  playCurrentSong(); // Play the first song
+}
+
 // Function to play the current song
 function playCurrentSong() {
   if (currentSongIndex < playlist.length) {
     const currentSong = playlist[currentSongIndex];
-    audioPlayer.src = currentSong.url;
-    audioPlayer.play();
+    // audioPlayer.src = currentSong.url;
+    spotifyEmbedController.loadUri(currentSong.uri);
+    
+    // Reset the playback position to the beginning of the song
+    // audioPlayer.currentTime = 0;
+    
+    // audioPlayer.play();
+    spotifyEmbedController.play();
     console.log(`Playing: ${currentSong.title} by ${currentSong.artist}`);
   } else {
     console.log("End of playlist");
   }
 }
 
-// Event listener for when a song ends
-audioPlayer.addEventListener('ended', () => {
-  // Move to the next song in the playlist
-  currentSongIndex++;
-  // Play the next song
-  playCurrentSong();
-});
+// audioPlayer.addEventListener('ended', () => {
+//   // Check if the current song has ended (e.g., playback position near the end)
+//   if (audioPlayer.currentTime >= audioPlayer.duration - 1) {
+//     // Move to the next song in the playlist
+//     currentSongIndex++;
+//     // Play the next song
+//     playCurrentSong();
+//   }
+// });
 
-// Function to play the playlist
-function playPlaylist() {
-  currentSongIndex = 0; // Start from the beginning
-  playCurrentSong(); // Play the first song
-}
+//
+// Setup Player
+//
+// We use the Spotify Embed API to play songs in the browser
+// Details here: https://developer.spotify.com/documentation/embeds/tutorials/using-the-iframe-api
+// and here: https://developer.spotify.com/documentation/embeds/references/iframe-api#methods
+//
+
+// Create an Audio element for the player
+// const audioPlayer = new Audio();
+
+window.onSpotifyIframeApiReady = (IFrameAPI) => {
+  console.log
+  const element = document.getElementById('embed-iframe');
+  const options = {
+      uri: 'spotify:track:574y1r7o2tRA009FW0LE7v',
+      // uri: '',
+      width: '100%',
+      height: '75',
+      autostart: false,
+    };
+  const callback = (EmbedController) => {
+    spotifyEmbedController = EmbedController;
+  };
+  spotifyCallback = callback;
+  IFrameAPI.createController(element, options, callback);
+  spotifyIframeAPI = IFrameAPI;
+
+  spotifyEmbedController.addListener('playback_update', e => {
+    // document.getElementById('progressTimestamp').innerText = `${parseInt(e.data.position / 1000, 10)} s`;
+    // console.log(e);
+    if (e.data.position >= e.data.duration - 1) {
+      // Move to the next song in the playlist
+      currentSongIndex++;
+      // Play the next song
+      playCurrentSong();
+    }
+  });
+};
