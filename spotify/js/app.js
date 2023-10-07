@@ -1,6 +1,8 @@
 // Define your Spotify API endpoint for search
 const spotifySearchEndpoint = 'https://api.spotify.com/v1/search';
 const spotifyAlbumEndpoint = 'https://api.spotify.com/v1/albums/';
+const spotifyTokenEndpoint = 'https://accounts.spotify.com/api/token';
+const clientId = '873252498aa44a53a6e33c34d8b391b9'; // Your client id
 
 // Global variables to track playlist and current song index
 let albumImageURL = '';
@@ -33,32 +35,46 @@ let effects = {
 // Access Token
 //
 
+// Create a global variable to store the access token info
+const accessToken = {
+  token: '',
+  expires: 0,
+  received: 0,
+};
+
+// Define the $.urlParam function to extract query parameters
+$.urlParam = function(name){
+  var results = new RegExp('[\?&#]' + name + '=([^&#]*)').exec(window.location.href);
+  if (results==null) {
+     return null;
+  }
+  return decodeURI(results[1]) || 0;
+}
+
 // Function to parse the URL and extract the access_token
-function getAccessTokenFromURL() {
-  const url = window.location.href;
+function getAccessTokenFromURL(url) {
   const tokenIndex = url.indexOf('#access_token=');
   if (tokenIndex !== -1) {
     // Token found in the URL
     const tokenStart = tokenIndex + 14; // Length of '#access_token='
     const tokenEnd = url.indexOf('&', tokenStart);
     if (tokenEnd !== -1) {
-      const accessToken = url.substring(tokenStart, tokenEnd);
-      return accessToken;
+      accessToken.token = url.substring(tokenStart, tokenEnd);
+      accessToken.expires = parseInt($.urlParam('expires_in')); // Parse expiration time
+      accessToken.received = new Date().getTime(); // Record the time received
     }
   }
-  return null; // Token not found in the URL
+  return accessToken.token; // Return the extracted token
 }
 
-// Get the access_token from the URL
-const accessToken = getAccessTokenFromURL();
+// Get the access_token from the URL and record its info
+const tokenFromURL = getAccessTokenFromURL(window.location.href);
 
-if (accessToken) {
+if (tokenFromURL) {
   // The access_token is available, you can use it in your app now
-  console.log("Access Token:", accessToken);
-
-  // Now you can use the access token to make requests to the Spotify API
-  // Example: Call your searchSpotify function with the access token
-  searchSpotify('Your search query', accessToken);
+  console.log("Access Token:", accessToken.token);
+  console.log("Expires in:", accessToken.expires, "seconds");
+  console.log("Received at:", new Date(accessToken.received).toLocaleString());
 } else {
   console.log("Access Token not found in the URL.");
 }
@@ -70,6 +86,89 @@ $.urlParam = function(name){
        return null;
     }
     return decodeURI(results[1]) || 0;
+}
+
+// Function to check if the access token is expired and renew it if needed
+function checkAndRenewAccessToken(accessToken) {
+  const currentTime = new Date().getTime();
+  const tokenReceivedTime = accessToken.received;
+  const tokenExpiration = accessToken.expires * 1000; // Convert seconds to milliseconds
+
+  // Check if the current time is greater than the token's received time + expiration time
+  if (currentTime > tokenReceivedTime + tokenExpiration) {
+    // Access token is expired, renew it
+    renewAccessTokenSilently();
+    return true; // Token was expired and is being renewed
+  }
+
+  return false; // Token is still valid
+}
+
+// Function to renew the access token without reloading the page
+function renewAccessToken() {
+  // Make an AJAX request to Spotify's token renewal endpoint
+  $.ajax({
+    url: spotifyTokenEndpoint, // Spotify's token renewal endpoint
+    method: 'POST',
+    headers: {
+      'Authorization': 'Basic ' + btoa(clientId + ':' + clientSecret) // Base64-encoded client ID and secret
+    },
+    data: {
+      'grant_type': 'refresh_token',
+      'refresh_token': refreshToken // Your stored refresh token
+    },
+    success: function(response) {
+      // Handle the successful response here
+      console.log('Access Token Renewed:', response.access_token);
+
+      // Update the accessToken object with the renewed token
+      accessToken.token = response.access_token;
+      accessToken.received = new Date().getTime(); // Update the received time
+    },
+    error: function(xhr, status, error) {
+      // Handle errors here
+      console.error('Error renewing access token:', error);
+    }
+  });
+}
+
+function renewAccessTokenSilently() {
+  const silentRefreshIframe = document.getElementById('silent-refresh-iframe');
+  const clientId = 'YOUR_CLIENT_ID'; // Replace with your client ID
+  const redirectUri = 'YOUR_REDIRECT_URI'; // Replace with your redirect URI
+
+  // Construct the authorization URL for silent refresh
+  const authorizationUrl = `https://accounts.spotify.com/authorize?response_type=token&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&prompt=none`;
+
+  // Set the iframe's source to the authorization URL
+  silentRefreshIframe.src = authorizationUrl;
+}
+
+// Add an event listener to the iframe for when it loads (response received)
+$(document).ready(function () {
+  $('#silent-refresh-iframe').on('load', function () {
+    // Check the URL of the iframe to determine the response
+    const iframeUrl = $(this).prop('contentWindow').location.href;
+  
+    // Handle the response (e.g., extract tokens and update the session)
+    handleSilentRefreshResponse(iframeUrl);
+  });
+});
+
+
+// Function to handle the response from the silent refresh iframe
+function handleSilentRefreshResponse(iframeUrl) {
+  // Parse the access token from the iframe URL and update the existing accessToken object
+  const newAccessToken = getAccessTokenFromURL(iframeUrl);
+
+  // Check if a new access token was received successfully
+  if (newAccessToken) {
+    // You can also perform any other necessary actions with the new token here
+    // For example, update the user's session or make authenticated requests
+  } else {
+    // Handle the case where the silent refresh did not result in a new token
+    console.log('Silent refresh did not return a new access token.');
+  }
 }
 
 //
@@ -88,7 +187,7 @@ function searchSpotify(query) {
   $.ajax({
     url: spotifySearchEndpoint,
     headers: {
-      'Authorization': `Bearer ${accessToken}`,
+      'Authorization': `Bearer ${accessToken.token}`,
     },
     data: params,
     success: function (response) {
@@ -179,7 +278,7 @@ function playAlbum(albumId, albumImageURL) {
   $.ajax({
     url: albumTracksUrl,
     headers: {
-      'Authorization': `Bearer ${accessToken}`,
+      'Authorization': `Bearer ${accessToken.token}`,
     },
     success: function (response) {
       // Handle the successful response here and store the album image URL
@@ -246,8 +345,8 @@ function playCurrentSong() {
       position: 0,
       time: new Date().getTime()
     };
+    console.log(`Playing (spotify player): ${currentSong.title} by ${currentSong.artist}`);
     spotifyEmbedController.play();
-    console.log(`Playing: ${currentSong.title} by ${currentSong.artist}`);
   } else {
     console.log("End of playlist");
   }
@@ -307,7 +406,7 @@ window.onSpotifyIframeApiReady = (IFrameAPI) => {
         // get the difference between the current time and the last time we recorded playback data
         timeDelta = Math.abs(currentTime - playbackData.time);
         posDelta = Math.abs(e.data.position - playbackData.position);
-        console.log(e.data.position, playbackData.position, timeDelta, posDelta, Math.abs(timeDelta - posDelta), e.data.isPaused);
+        // console.log(e.data.position, playbackData.position, timeDelta, posDelta, Math.abs(timeDelta - posDelta), e.data.isPaused);
         // if the two deltas are outside of a window defined by leeway
         if (Math.abs(timeDelta - posDelta) > 2000) {
           // record time of scratch
@@ -336,6 +435,7 @@ function playRandomScratch() {
   const randomScratch = effects.scratch[Math.floor(Math.random() * effects.scratch.length)];
   effectsPlayer.src = randomScratch.file;
   effectsPlayer.currentTime = 0;
+  console.log(`Playing (effects player): ${randomScratch.file}`);
   effectsPlayer.play();
   return randomScratch.time;
 }
@@ -345,6 +445,7 @@ function playNeedleLift() {
   const randomLift = effects.lift[Math.floor(Math.random() * effects.lift.length)];
   effectsPlayer.src = randomLift.file;
   effectsPlayer.currentTime = 0;
+  console.log(`Playing (effects player): ${randomLift.file}`);
   effectsPlayer.play();
 }
 
@@ -352,12 +453,14 @@ function playNeedleDrop() {
   const randomDrop = effects.drop[Math.floor(Math.random() * effects.drop.length)];
   effectsPlayer.src = randomDrop.file;
   effectsPlayer.currentTime = 0;
+  console.log(`Playing (effects player): ${randomDrop.file}`);
   effectsPlayer.play();
   return randomDrop.time;
 }
 
 // play a crackle sound
 function playCrackle() {
+  console.log(`Playing (crackle player): ${effects.crackle[0].file}`);
   cracklePlayer.play();
 }
 
