@@ -98,14 +98,14 @@ div, nav {
   padding: .5rem;
   -webkit-overflow-scrolling: touch;
   -ms-overflow-style: none;
-  height: calc(100% - 80px);
+  height: calc(100% - 100px);
 }
 
 /* desktop: fixed at bottom of screen */
 #player-panel {
   position: fixed;
   bottom: 0;
-  height: 80px;
+  height: 100px;
   width: 100%;
   /* border: solid 1px red; */
   z-index: 4;

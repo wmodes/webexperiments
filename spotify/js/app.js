@@ -9,6 +9,25 @@ let currentSongIndex = 0;
 let spotifyCallback = null;
 let spotifyIframeAPI = null;
 let spotifyEmbedController = null;
+let playbackData = {};
+let lastScratchTime = 0;
+
+let effects = {
+  'scratch': [
+    {file: 'audio/scratch1.wav', time: 450},
+    {file: 'audio/scratch2.wav', time: 180},
+    {file: 'audio/scratch3.wav', time: 550},
+  ],
+  'crackle': [
+    {file: 'audio/crackle.wav', time: 0},
+  ],
+  'lift': [
+    {file: 'audio/needle-lift.wav', time: 10},
+  ],
+  'drop': [
+    {file: 'audio/needle-drop.wav', time: 4000},
+  ],
+}
 
 //
 // Access Token
@@ -192,37 +211,47 @@ function playAlbum(albumId, albumImageURL) {
 
 // Function to play the playlist
 function playPlaylist() {
-  currentSongIndex = 0; // Start from the beginning
-  playCurrentSong(); // Play the first song
+  currentSongIndex = 0; 
+  queueFirstSong()
+  // wait two seconds before starting the playlist
+  setTimeout(function() {
+    dropLen = playNeedleDrop();
+    setTimeout(function() {
+      playCurrentSong();
+      playCrackle();
+    }, dropLen-500);
+  }, 2000);
+}
+
+// queue current song, but pause for now
+function queueFirstSong() {
+  if (currentSongIndex < playlist.length) {
+    const currentSong = playlist[currentSongIndex];
+    spotifyEmbedController.loadUri(currentSong.uri);
+    spotifyEmbedController.pause();
+    console.log(`Queuing: ${currentSong.title} by ${currentSong.artist}`);
+  } else {
+    console.log("End of playlist");
+  }
 }
 
 // Function to play the current song
 function playCurrentSong() {
   if (currentSongIndex < playlist.length) {
     const currentSong = playlist[currentSongIndex];
-    // audioPlayer.src = currentSong.url;
-    spotifyEmbedController.loadUri(currentSong.uri);
-    
-    // Reset the playback position to the beginning of the song
-    // audioPlayer.currentTime = 0;
-    
-    // audioPlayer.play();
+    if (currentSongIndex > 0) {
+      spotifyEmbedController.loadUri(currentSong.uri);
+    }
+    playbackData = {
+      position: 0,
+      time: new Date().getTime()
+    };
     spotifyEmbedController.play();
     console.log(`Playing: ${currentSong.title} by ${currentSong.artist}`);
   } else {
     console.log("End of playlist");
   }
 }
-
-// audioPlayer.addEventListener('ended', () => {
-//   // Check if the current song has ended (e.g., playback position near the end)
-//   if (audioPlayer.currentTime >= audioPlayer.duration - 1) {
-//     // Move to the next song in the playlist
-//     currentSongIndex++;
-//     // Play the next song
-//     playCurrentSong();
-//   }
-// });
 
 //
 // Setup Player
@@ -232,8 +261,11 @@ function playCurrentSong() {
 // and here: https://developer.spotify.com/documentation/embeds/references/iframe-api#methods
 //
 
-// Create an Audio element for the player
-// const audioPlayer = new Audio();
+// Create Audio elements for the player
+const effectsPlayer = new Audio();
+const cracklePlayer = new Audio();
+cracklePlayer.src = effects.crackle[0].file;
+cracklePlayer.loop = true;
 
 window.onSpotifyIframeApiReady = (IFrameAPI) => {
   console.log
@@ -242,7 +274,7 @@ window.onSpotifyIframeApiReady = (IFrameAPI) => {
       uri: 'spotify:track:574y1r7o2tRA009FW0LE7v',
       // uri: '',
       width: '100%',
-      height: '75',
+      height: '90px',
       autostart: false,
     };
   const callback = (EmbedController) => {
@@ -261,5 +293,74 @@ window.onSpotifyIframeApiReady = (IFrameAPI) => {
       // Play the next song
       playCurrentSong();
     }
+    // else if (e.data.isPaused == true) {
+    //   // play a needle lift sound
+    //   playNeedleLift();
+    //   stopCrackle();
+    // }
+    // if we are not at the beginning of a song and we haven't scratched within the last second
+    else if (e.data.position > 2000) {
+      // check for a careless record scratch
+      currentTime = new Date().getTime();
+      // if we haven't scratched within the last two second
+      if (Math.abs(currentTime - lastScratchTime) > 2000) {
+        // get the difference between the current time and the last time we recorded playback data
+        timeDelta = Math.abs(currentTime - playbackData.time);
+        posDelta = Math.abs(e.data.position - playbackData.position);
+        console.log(e.data.position, playbackData.position, timeDelta, posDelta, Math.abs(timeDelta - posDelta), e.data.isPaused);
+        // if the two deltas are outside of a window defined by leeway
+        if (Math.abs(timeDelta - posDelta) > 1000) {
+          // record time of scratch
+          lastScratchTime = currentTime;
+          // Randomly play a scratch sound
+          var scratchLen = playRandomScratch()
+          // Pause the recording
+          spotifyEmbedController.togglePlay();
+          // Delay before restarting the recording
+          setTimeout(function() {
+            spotifyEmbedController.togglePlay();
+          }, scratchLen);
+        }
+        // we record the playback data for the next update
+        playbackData = {
+          position: e.data.position,
+          time: new Date().getTime()
+        };
+      };
+    }
   });
 };
+
+// play a random scratch sound
+function playRandomScratch() {
+  const randomScratch = effects.scratch[Math.floor(Math.random() * effects.scratch.length)];
+  effectsPlayer.src = randomScratch.file;
+  effectsPlayer.currentTime = 0;
+  effectsPlayer.play();
+  return randomScratch.time;
+}
+
+// play a needle lift sound
+function playNeedleLift() {
+  const randomLift = effects.lift[Math.floor(Math.random() * effects.lift.length)];
+  effectsPlayer.src = randomLift.file;
+  effectsPlayer.currentTime = 0;
+  effectsPlayer.play();
+}
+
+function playNeedleDrop() {
+  const randomDrop = effects.drop[Math.floor(Math.random() * effects.drop.length)];
+  effectsPlayer.src = randomDrop.file;
+  effectsPlayer.currentTime = 0;
+  effectsPlayer.play();
+  return randomDrop.time;
+}
+
+// play a crackle sound
+function playCrackle() {
+  cracklePlayer.play();
+}
+
+function stopCrackle() {
+  cracklePlayer.pause();
+}
