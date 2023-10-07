@@ -1,11 +1,11 @@
-var spotify_me_endpoint = 'https://api.spotify.com/v1/me';
-var spotify_auth_endpoint = 'https://accounts.spotify.com/authorize';
-var client_id = '873252498aa44a53a6e33c34d8b391b9'; // Your client id
-var redirect_uri = 'https://wmodes.github.io/webexperiments/spotify/app.html'; // Your redirect uri
+var spotifyMeEndpoint = 'https://api.spotify.com/v1/me';
+var spotifyAuthEndpoint = 'https://accounts.spotify.com/authorize';
+var clientId = '873252498aa44a53a6e33c34d8b391b9'; // Your client id
+var redirectUri = 'https://wmodes.github.io/webexperiments/spotify/app.html'; // Your redirect uri
 
 $(document).ready(function() {
 
-  var stateKey = 'spotify_auth_state';
+  var stateKey = 'spotifyAuthState';
 
   function getHashParams() {
     var hashParams = {};
@@ -37,19 +37,19 @@ $(document).ready(function() {
 
   var params = getHashParams();
 
-  access_token = params.access_token,
+  var accessToken = params.access_token,
       state = params.state,
       storedState = localStorage.getItem(stateKey);
 
-  if (access_token && (state == null || state !== storedState)) {
+  if (accessToken && (state == null || state !== storedState)) {
     alert('There was an error during the authentication');
   } else {
     localStorage.removeItem(stateKey);
-    if (access_token) {
+    if (accessToken) {
       $.ajax({
-          url: spotify_auth_endpoint,
+          url: spotifyAuthEndpoint,
           headers: {
-            'Authorization': 'Bearer ' + access_token
+            'Authorization': 'Bearer ' + accessToken
           },
           success: function(response) {
             userProfilePlaceholder.html(userProfileTemplate(response));
@@ -63,18 +63,18 @@ $(document).ready(function() {
         $('#loggedin').hide();
     }
 
-    $('#login-button').on('click', function() {
+    $('#loginButton').on('click', function() {
 
       var state = generateRandomString(16);
 
       localStorage.setItem(stateKey, state);
       var scope = 'user-read-private user-read-email';
 
-      var url = spotify_auth_endpoint;
+      var url = spotifyAuthEndpoint;
       url += '?response_type=token';
-      url += '&client_id=' + encodeURIComponent(client_id);
+      url += '&client_id=' + encodeURIComponent(clientId);
       url += '&scope=' + encodeURIComponent(scope);
-      url += '&redirect_uri=' + encodeURIComponent(redirect_uri);
+      url += '&redirect_uri=' + encodeURIComponent(redirectUri);
       url += '&state=' + encodeURIComponent(state);
 
       window.location = url;

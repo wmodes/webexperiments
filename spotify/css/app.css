@@ -98,6 +98,7 @@ div, nav {
   padding: .5rem;
   -webkit-overflow-scrolling: touch;
   -ms-overflow-style: none;
+  height: calc(100% - 80px);
 }
 
 /* desktop: fixed at bottom of screen */
@@ -112,10 +113,12 @@ div, nav {
 }
 
 #control-panel {
-  /* position: sticky;
-  top: 1px;
+  position: sticky;
+  top: 0; /* Adjust the top value as needed */
+  background-color: #000; /* Add a background color if desired */
   height: 50px;
-  width: 100%; */
+  width: 100%;
+  z-index: 3; /* Ensure it's above the scrolling content */
 }
 
 /*
