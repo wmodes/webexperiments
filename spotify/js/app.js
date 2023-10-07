@@ -1,3 +1,35 @@
+// Define your Spotify API endpoint for search
+const spotifySearchEndpoint = 'https://api.spotify.com/v1/search';
+
+// Function to parse the URL and extract the access_token
+function getAccessTokenFromURL() {
+  const url = window.location.href;
+  const tokenIndex = url.indexOf('#access_token=');
+  if (tokenIndex !== -1) {
+    // Token found in the URL
+    const tokenStart = tokenIndex + 14; // Length of '#access_token='
+    const tokenEnd = url.indexOf('&', tokenStart);
+    if (tokenEnd !== -1) {
+      const accessToken = url.substring(tokenStart, tokenEnd);
+      return accessToken;
+    }
+  }
+  return null; // Token not found in the URL
+}
+
+// Get the access_token from the URL
+const accessToken = getAccessTokenFromURL();
+
+if (accessToken) {
+  // The access_token is available, you can use it in your app now
+  console.log("Access Token:", accessToken);
+
+  // Now you can use the access token to make requests to the Spotify API
+  // Example: Call your searchSpotify function with the access token
+  searchSpotify('Your search query', accessToken);
+} else {
+  console.log("Access Token not found in the URL.");
+}
 
 // get parameters
 $.urlParam = function(name){
@@ -8,51 +40,72 @@ $.urlParam = function(name){
     return decodeURI(results[1]) || 0;
 }
 
-
-// var accessToken = $.urlParam('access_token');
-// console.log("Access token:", accessToken);
-//
-// var spotifyApi = new SpotifyWebApi();
-// spotifyApi.setAccessToken(accessToken);
-// // spotifyApi.setPromiseImplementation(Q);
-//
-// // get Elvis' albums, using Promises through Promise, Q or when
-// spotifyApi.getArtistAlbums('43ZHCT0cAZBISjO8DG9PnE').then(
-//   function (data) {
-//     console.log('data:', JSON.stringify(data, null, '\t'));
-//     showAlbums(data);
-//   },
-//   function (err) {
-//     console.error(err);
-//   }
-// );
-
 function showAlbums(data) {
-  // console.log("array:", data.items);
+  // Clear existing albums
+  $("#album-list").empty();
+
   var albumList = data.items;
-  // console.log("albumList:", JSON.stringify(albumList, null, '\t'))
-  // $("#albums").html("Album data: <pre>", JSON.stringify(albumList, null, '\t'), "</pre>");
-  for (i=0;i<albumList.length;i++) {
+  for (var i = 0; i < albumList.length; i++) {
     var albumName = albumList[i].name;
     var albumImageURL = albumList[i].images[0].url;
-    var albumYear = albumList[i].release_date.slice(0,4);
+    var albumYear = albumList[i].release_date.slice(0, 4);
     var albumArtist = albumList[i].artists[0].name;
     var buttonSVG = '<svg role="img" height="24" width="24" viewBox="0 0 24 24" class="Svg-ytk21e-0 eqtHWV"><path d="M7.05 3.606l13.49 7.788a.7.7 0 010 1.212L7.05 20.394A.7.7 0 016 19.788V4.212a.7.7 0 011.05-.606z"></path></svg>';
     var albumHTML =
       "<div class='image'>" +
-        "<img src='" + albumImageURL + "'>" +
-        "<button class='play-button'>" + buttonSVG + "</button>" +
+      "<img src='" + albumImageURL + "'>" +
+      "<button class='play-button'>" + buttonSVG + "</button>" +
       "</div>" +
       "<div class='name'>" + albumName + "</div>" +
       "<div class='more'>" +
-        "<time class='year'>" + albumYear + "</time>" + " • " +
-        "<span class='artist'>" + albumArtist + "</span>" +
+      "<time class='year'>" + albumYear + "</time>" + " • " +
+      "<span class='artist'>" + albumArtist + "</span>" +
       "</div>";
-    var newAlbum = $("<div class='album'></div>").html(albumHTML);
-    $("#album-list").append(newAlbum);
     var newAlbum = $("<div class='album'></div>").html(albumHTML);
     $("#album-list").append(newAlbum);
   }
 }
 
-showAlbums(testData);
+// showAlbums(testData);
+
+function searchSpotify(query) {
+
+  // Set up the parameters for the search request
+  const params = {
+    q: query,
+    type: 'album,artist', // You can specify 'album', 'artist', or both
+  };
+
+  // Make an AJAX request to the Spotify API
+  $.ajax({
+    url: spotifySearchEndpoint,
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+    },
+    data: params,
+    success: function (response) {
+      // Handle the successful response here
+      console.log(response);
+      showAlbums(response.albums);
+    },
+    error: function (xhr, status, error) {
+      // Handle errors here
+      console.error('Error:', error);
+    }
+  });
+}
+
+// Usage example:
+// searchSpotify('Pink Floyd'); // Replace with the search query of your choice
+
+// Attach a keyup event handler to the search input field
+$('.search-field').keyup(function (event) {
+  // Check if the Enter key (keyCode 13) is pressed
+  if (event.keyCode === 13) {
+    // Get the value entered by the user
+    const query = $(this).val();
+    
+    // Call the searchSpotify function with the query
+    searchSpotify(query);
+  }
+});
