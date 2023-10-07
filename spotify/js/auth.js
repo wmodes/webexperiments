@@ -1,3 +1,8 @@
+var spotify_me_endpoint = 'https://api.spotify.com/v1/me';
+var spotify_auth_endpoint = 'https://accounts.spotify.com/authorize';
+var client_id = '873252498aa44a53a6e33c34d8b391b9'; // Your client id
+var redirect_uri = 'https://wmodes.github.io/webexperiments/spotify/app.html'; // Your redirect uri
+
 $(document).ready(function() {
 
   var stateKey = 'spotify_auth_state';
@@ -32,7 +37,7 @@ $(document).ready(function() {
 
   var params = getHashParams();
 
-  var access_token = params.access_token,
+  access_token = params.access_token,
       state = params.state,
       storedState = localStorage.getItem(stateKey);
 
@@ -42,7 +47,7 @@ $(document).ready(function() {
     localStorage.removeItem(stateKey);
     if (access_token) {
       $.ajax({
-          url: 'https://api.spotify.com/v1/me',
+          url: spotify_auth_endpoint,
           headers: {
             'Authorization': 'Bearer ' + access_token
           },
@@ -60,15 +65,12 @@ $(document).ready(function() {
 
     $('#login-button').on('click', function() {
 
-      var client_id = '873252498aa44a53a6e33c34d8b391b9'; // Your client id
-      var redirect_uri = 'https://wmodes.github.io/webexperiments/spotify/app.html'; // Your redirect uri
-
       var state = generateRandomString(16);
 
       localStorage.setItem(stateKey, state);
       var scope = 'user-read-private user-read-email';
 
-      var url = 'https://accounts.spotify.com/authorize';
+      var url = spotify_auth_endpoint;
       url += '?response_type=token';
       url += '&client_id=' + encodeURIComponent(client_id);
       url += '&scope=' + encodeURIComponent(scope);

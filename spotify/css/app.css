@@ -42,6 +42,7 @@ body, #content {
   font-family: "Helvetica Neue", helvetica, arial, "Hiragino Kaku Gothic Pro", Meiryo, "MS Gothic";
   margin: 0;
   padding: 0;
+  overflow-x: hidden;
 }
 
 /*
@@ -49,65 +50,72 @@ body, #content {
  */
 
 div, nav {
-  border: solid 1px gray;
-}
-
-#content, #top-panel, #player-panel {
-  position: fixed;
-  overflow: hidden;
+  /* border: solid 1px gray; */
 }
 
 #content {
-  /* width: 100%; */
-  /* height: 100vw; */
 }
 
-#top-panel {
-  /* height: calc(100vh - 100px); */
-  /* width: 100%; */
+/* desktop: natural flow; divided into two adjustable columns 
+   starting with the first column at 20% of the screen width */
+#main-panel {
   display: flex;
-  flex-wrap: nowrap;
-  z-index: 1;
+  flex-direction: row;
+  overflow: hidden;
+  height: 100vh;
+  margin-top: -100px;
+  padding-top: 100px;
+  position: relative;
+  width: 100%;
+  backface-visibility: hidden;
+  will-change: overflow;
 }
 
+#left-panel {
+  flex: 0 0 20%;
+  /* The first column will take up 20% of the container width */
+  background-color: #000; /* Adjust as needed */
+  padding: 10px; /* Adjust as needed */
+  min-width: 200px;
+  /* overflow: hidden; */
+}
+
+#recent-list {
+  overflow: auto;
+  height: auto;
+  padding: .5rem;
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: none;
+}
+
+#right-panel {
+  flex: 1;
+  /* The second column will take up the remaining available space */
+  background-color: #000; /* Adjust as needed */
+  /* from https://benfrain.com/independent-scrolling-panels-body-scroll-using-just-css/ */
+  overflow: auto;
+  height: auto;
+  padding: .5rem;
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: none;
+}
+
+/* desktop: fixed at bottom of screen */
 #player-panel {
   position: fixed;
   bottom: 0;
-  height: 100px;
+  height: 80px;
   width: 100%;
-  border: solid 1px red;
+  /* border: solid 1px red; */
   z-index: 4;
   background-color: #000;
 }
 
-#main-area1 {
-  width: calc(var(--nav-bar-width) + 9px);
-  min-width: calc(var(--nav-bar-width) + 9px);
-  z-index: 3;
-  background-color: #000;
-}
-
-#nav-panel, #fave-panel {
-  padding: 16px;
-}
-
-#main-area2 {
-  z-index: 1;
-  background-color: #101010;
-}
-
 #control-panel {
-  position: fixed;
-  top: 0;
-  /* width: 100%; */
-  height: 64px;
-  min-width: 0;
-  pointer-events: none;
-  z-index: 2;
-}
-
-#info-panel {
-  margin-top: 64px;
+  /* position: sticky;
+  top: 1px;
+  height: 50px;
+  width: 100%; */
 }
 
 /*
@@ -399,8 +407,6 @@ div, nav {
 }
 
 .search-bar {
-  webkit-box-flex: 0;
-  -ms-flex: 0 1 364px;
   flex: 0 1 364px;
   position: relative;
   -webkit-app-region: no-drag;
