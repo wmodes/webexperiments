@@ -1,7 +1,7 @@
-var spotifyMeEndpoint = 'https://api.spotify.com/v1/me';
-var spotifyAuthEndpoint = 'https://accounts.spotify.com/authorize';
-var clientId = '873252498aa44a53a6e33c34d8b391b9'; // Your client id
-var redirectUri = 'https://wmodes.github.io/webexperiments/spotify/app.html'; // Your redirect uri
+const spotifyMeEndpoint = 'https://api.spotify.com/v1/me';
+const spotifyAuthEndpoint = 'https://accounts.spotify.com/authorize';
+const clientId = '873252498aa44a53a6e33c34d8b391b9'; // Your client id
+const redirectUri = 'https://wmodes.github.io/webexperiments/spotify/app.html'; // Your redirect uri
 
 $(document).ready(function () {
   var stateKey = 'spotifyAuthState';
@@ -68,7 +68,7 @@ $(document).ready(function () {
       $('#loggedin').hide();
     }
 
-    $('#loginButton').on('click', function () {
+    $('#login-button').on('click', function () {
       var state = generateRandomString(16);
 
       localStorage.setItem(stateKey, state);
