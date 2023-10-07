@@ -293,11 +293,11 @@ window.onSpotifyIframeApiReady = (IFrameAPI) => {
       // Play the next song
       playCurrentSong();
     }
-    // else if (e.data.isPaused == true) {
-    //   // play a needle lift sound
-    //   playNeedleLift();
-    //   stopCrackle();
-    // }
+    else if (e.data.isPaused == true) {
+      // play a needle lift sound
+      // playNeedleLift();
+      stopCrackle();
+    }
     // if we are not at the beginning of a song and we haven't scratched within the last second
     else if (e.data.position > 2000) {
       // check for a careless record scratch
@@ -309,7 +309,7 @@ window.onSpotifyIframeApiReady = (IFrameAPI) => {
         posDelta = Math.abs(e.data.position - playbackData.position);
         console.log(e.data.position, playbackData.position, timeDelta, posDelta, Math.abs(timeDelta - posDelta), e.data.isPaused);
         // if the two deltas are outside of a window defined by leeway
-        if (Math.abs(timeDelta - posDelta) > 1000) {
+        if (Math.abs(timeDelta - posDelta) > 2000) {
           // record time of scratch
           lastScratchTime = currentTime;
           // Randomly play a scratch sound
