@@ -3,16 +3,15 @@ var spotifyAuthEndpoint = 'https://accounts.spotify.com/authorize';
 var clientId = '873252498aa44a53a6e33c34d8b391b9'; // Your client id
 var redirectUri = 'https://wmodes.github.io/webexperiments/spotify/app.html'; // Your redirect uri
 
-$(document).ready(function() {
-
+$(document).ready(function () {
   var stateKey = 'spotifyAuthState';
 
   function getHashParams() {
     var hashParams = {};
     var e, r = /([^&;=]+)=?([^&;]*)/g,
-        q = window.location.hash.substring(1);
-    while ( e = r.exec(q)) {
-       hashParams[e[1]] = decodeURIComponent(e[2]);
+      q = window.location.hash.substring(1);
+    while (e = r.exec(q)) {
+      hashParams[e[1]] = decodeURIComponent(e[2]);
     }
     return hashParams;
   }
@@ -28,18 +27,18 @@ $(document).ready(function() {
   }
 
   var userProfileSource = $('#user-profile-template').html(),
-      userProfileTemplate = Handlebars.compile(userProfileSource),
-      userProfilePlaceholder = $('#user-profile');
+    userProfileTemplate = Handlebars.compile(userProfileSource),
+    userProfilePlaceholder = $('#user-profile');
 
   var oauthSource = $('#oauth-template').html(),
-      oauthTemplate = Handlebars.compile(oauthSource),
-      oauthPlaceholder = $('#oauth');
+    oauthTemplate = Handlebars.compile(oauthSource),
+    oauthPlaceholder = $('#oauth');
 
   var params = getHashParams();
 
   var accessToken = params.access_token,
-      state = params.state,
-      storedState = localStorage.getItem(stateKey);
+    state = params.state,
+    storedState = localStorage.getItem(stateKey);
 
   if (accessToken && (state == null || state !== storedState)) {
     alert('There was an error during the authentication');
@@ -47,24 +46,29 @@ $(document).ready(function() {
     localStorage.removeItem(stateKey);
     if (accessToken) {
       $.ajax({
-          url: spotifyAuthEndpoint,
-          headers: {
-            'Authorization': 'Bearer ' + accessToken
-          },
-          success: function(response) {
-            userProfilePlaceholder.html(userProfileTemplate(response));
+        url: spotifyMeEndpoint,
+        headers: {
+          'Authorization': 'Bearer ' + accessToken
+        },
+        success: function (response) {
+          userProfilePlaceholder.html(userProfileTemplate(response));
 
-            $('#login').hide();
-            $('#loggedin').show();
-          }
+          $('#login').hide();
+          $('#loggedin').show();
+        },
+        error: function (xhr, status, error) {
+          // Handle AJAX errors here
+          console.error('Error:', error);
+          // Optionally, display an error message to the user
+          // $('#error-message').text('An error occurred while fetching user data.');
+        }
       });
     } else {
-        $('#login').show();
-        $('#loggedin').hide();
+      $('#login').show();
+      $('#loggedin').hide();
     }
 
-    $('#loginButton').on('click', function() {
-
+    $('#loginButton').on('click', function () {
       var state = generateRandomString(16);
 
       localStorage.setItem(stateKey, state);
