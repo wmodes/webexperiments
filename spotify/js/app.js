@@ -132,10 +132,11 @@ silentRefreshIframe.addEventListener('load', function () {
 
 // Function to handle the response from the silent refresh iframe
 function handleSilentRefreshResponse(iframeUrl) {
+  console
   // Parse the access token from the iframe URL and update the existing accessToken object
   const newAccessToken = getAccessTokenFromURL(iframeUrl);
   // Rewrite the iframe URL to the original URL
-  window.location.href = iframeUrl;
+  // window.location.href = iframeUrl;
 
   // Check if a new access token was received successfully
   if (newAccessToken) {
