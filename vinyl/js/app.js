@@ -567,8 +567,8 @@ window.onSpotifyIframeApiReady = (IFrameAPI) => {
     // if we pause, lift the needle
     else if (e.data.isPaused == true) {
       // play a needle lift sound
-      playNeedleLift();
-      stopCrackle();
+      // playNeedleLift();
+      // stopCrackle();
     }
     // TODO: Refine this logic
     // if we are not at the beginning of a song and we haven't scratched within the last second
