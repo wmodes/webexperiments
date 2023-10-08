@@ -7,18 +7,33 @@ const clientId = '873252498aa44a53a6e33c34d8b391b9'; // Your client id
 
 // Global variables to track playlist and current song index
 let albumImageURL = '';
+// array of tracks on current albumb playing
 let playlist = [];
+// array of search results as objects including id, name, artist, and image
+let resultsList = [];
+// array of last 12 albums as objects including id, name, artist, and image
+let recentsList = []; 
+// array of 20 albums deleted from the recents list as objects including id, name, artist, and image
+let throwbackList = [];
 let currentSongIndex = 0;
 let spotifyCallback = null;
 let spotifyIframeAPI = null;
 let spotifyEmbedController = null;
 let playbackData = {};
 let lastScratchTime = 0;
-let isCrackleOn = true;
+let crackleIsOn = true;
 
 // Some configuration
 const startTime = 2000;
 const endTime = 3000;
+const scratchLeeway = 5000;
+const fadeInOutTime = 3000;
+const recentsLen = 12;
+const throwbackLen = 20;
+
+
+const buttonColor = 'hsla(0,0%,100%,.7)';
+const buttonColorHighlight = '#ffffff';
 
 let effects = {
   'scratch': [
@@ -121,7 +136,6 @@ function renewAccessTokenSilently() {
   silentRefreshIframe.src = authorizationUrl;
 }
 
-
 silentRefreshIframe.addEventListener('load', function () {
   // Check the URL of the iframe to determine the response
   // Doesn't work because of CORS
@@ -174,9 +188,10 @@ function searchSpotify(query) {
     data: params,
     success: function (response) {
       // Handle the successful response here
-      console.log(response.albums);
-      showAlbums(response.albums);
-      showAlbumPanel()
+      console.log(response.albums.items);
+      resultsList = response.albums.items;
+      showResults();
+      showResultsPanel();
     },
     error: function (xhr, status, error) {
       // Handle errors here
@@ -201,30 +216,27 @@ $('.search-field').keyup(function (event) {
 });
 
 //
-// Display Albums
+// Display Results
 //
 
-function showAlbums(data) {
-  // Clear existing albums
-  $("#album-list").empty();
+function showResults() {
+  // Clear existing results
+  $("#results-list").empty();
 
-  var albumList = data.items;
-  for (var i = 0; i < albumList.length; i++) {
-    var albumName = albumList[i].name;
-    var albumImageURL = albumList[i].images[0].url;
-    var albumYear = albumList[i].release_date.slice(0, 4);
-    var albumArtist = albumList[i].artists[0].name;
-    var albumId = albumList[i].id; // Spotify album ID
-
-    // Create a unique ID for the play button
-    var playButtonId = 'play-button-' + i;
+  for (var i = 0; i < resultsList.length; i++) {
+    var albumName = resultsList[i].name;
+    var albumImageURL = resultsList[i].images[0].url;
+    var albumYear = resultsList[i].release_date.slice(0, 4);
+    var albumArtist = resultsList[i].artists[0].name;
+    var albumId = resultsList[i].id; // Spotify album ID
 
     var buttonSVG = '<svg role="img" height="24" width="24" viewBox="0 0 24 24" class="Svg-ytk21e-0 eqtHWV"><path d="M7.05 3.606l13.49 7.788a.7.7 0 010 1.212L7.05 20.394A.7.7 0 016 19.788V4.212a.7.7 0 011.05-.606z"></path></svg>';
     var albumHTML =
       "<div class='image'>" +
       "<img src='" + albumImageURL + "'>" +
-      "<button class='play-button' id='" + playButtonId + 
-        "' data-album-id='" + albumId + 
+      "<button class='play-button' data-album-id='" + albumId + 
+        "' data-name='" + albumName +
+        "' data-artist='" + albumArtist +
         "' data-album-image='" + albumImageURL + "'>" + 
         buttonSVG + "</button>" +
       "</div>" +
@@ -234,15 +246,178 @@ function showAlbums(data) {
       "<span class='artist'>" + albumArtist + "</span>" +
       "</div>";
     var newAlbum = $("<div class='album'></div>").html(albumHTML);
-    $("#album-list").append(newAlbum);
+    $("#results-list").append(newAlbum);
+  }
 
-    // Add a click event listener to the play button
-    $("#" + playButtonId).on('click', function () {
+  $("#results-list").on('click', '.album', function () {
+    // Get the album id, name, artist, and image from the button's data attributes
+    var albumId = $(this).find('.play-button').data('album-id');
+    var albumName = $(this).find('.play-button').data('name');
+    var albumArtist = $(this).find('.play-button').data('artist');
+    var albumImageURL = $(this).find('.play-button').data('album-image');
+    // pass the album id, name, artist, and image
+    playAlbum(albumId, albumName, albumArtist, albumImageURL);
+  });
+}
+
+
+//
+// Recents List
+//
+
+// get recents from local storage
+recentsList = JSON.parse(localStorage.getItem('recents'));
+if (recentsList == null) {
+  recentsList = [];
+}
+// display recents
+showRecents();
+// get throwbacks from local storage
+throwbackList = JSON.parse(localStorage.getItem('throwbacks'));
+if (throwbackList == null) {
+  throwbackList = [];
+}
+// display hope page along with throwbacks
+showHomePanel();
+
+// Save a new album in the recents list
+// an array of the last 12 albums as objects including id, name, artist, and image
+function saveRecentAlbum(albumId, albumName, albumArtist, albumImageURL) {
+  // Before we add an album to the recents list, look it up by albumId and delete it
+  // from the recents list if it already exists
+  for (var i = 0; i < recentsList.length; i++) {
+    if (recentsList[i].id == albumId) {
+      recentsList.splice(i, 1);
+    }
+  }
+  // Save it at the top
+  recentsList.unshift({
+    id: albumId,
+    name: albumName,
+    artist: albumArtist,
+    image: albumImageURL,
+  });
+  // If the recents list is longer than 12, move any albums beyond 12 to the throwbacks list
+  if (recentsList.length > recentsLen) {
+    const albumsToMove = recentsList.slice(recentsLen);
+    throwbackList = throwbackList.concat(albumsToMove);
+    recentsList = recentsList.slice(0, recentsLen);
+  }
+  // Prune throwbacks to last 20 albums with slice
+  throwbackList = throwbackList.slice(0, throwbackLen);
+
+  // Store recents list in local storage
+  localStorage.setItem('recents', JSON.stringify(recentsList));
+  // Display recents list
+  showRecents();
+  // Store throwbacks list in local storage
+  localStorage.setItem('throwbacks', JSON.stringify(throwbackList));
+  // Display throwbacks list
+  updateThrowbacks();
+}
+
+// Function to display the recents list
+// For each of the albums in recents, we will construct an HTML element
+// and append it to the recents list
+//     <div class="recent-item" data-album-id="" data-name="" data-artist="" data-album-image="">
+//       <div class="recent-image"><img src="" alt=""></div>
+//       <div class="recent-info">
+//         <div class="recent-name">Album Title</div>
+//         <div class="recent-artist">Artist</div>
+//       </div>
+//     </div>
+// Adding a click event listener to the recent-item similar to the one in showAlbums 
+function showRecents() {
+  // Clear existing recents
+  $("#recent-list").empty();
+
+  for (var i = 0; i < recentsList.length; i++) {
+    var albumName = recentsList[i].name;
+    var albumImageURL = recentsList[i].image;
+    var albumArtist = recentsList[i].artist;
+    var albumId = recentsList[i].id; // Spotify album ID
+
+    // create a new element with the class "recent-item"
+    // add the album id, name, artist, and image as data attributes
+    // add the html for the album image and info
+    // append the new element to the recents list
+    var recentItemHTML = `
+      <div class="recent-item" 
+        data-album-id="${albumId}" 
+        data-name="${albumName}" 
+        data-artist="${albumArtist}" 
+        data-album-image="${albumImageURL}">
+        <div class="recent-image"><img src="${albumImageURL}" alt="${albumName} album art"></div>
+        <div class="recent-info">
+          <div class="recent-name">${albumName}</div>
+          <div class="recent-artist">${albumArtist}</div>
+        </div>
+      </div>`;
+    var newRecent = $(recentItemHTML);
+    $("#recent-list").append(newRecent);
+
+    // Add a click event listener to the recent item
+    $(newRecent).on('click', function () {
+      // Get the album id, name, artist, and image from the button's data attributes
       var albumId = $(this).data('album-id');
+      var albumName = $(this).data('name');
+      var albumArtist = $(this).data('artist');
       var albumImageURL = $(this).data('album-image');
-      playAlbum(albumId, albumImageURL);
+      // pass the album id, name, artist, and image
+      playAlbum(albumId, albumName, albumArtist, albumImageURL);
     });
   }
+}
+
+// Function to display the throwbacks list
+function updateThrowbacks() {
+
+  // if there are no throwbacks, hide the throwbacks panel
+  if (throwbackList.length == 0) {
+    $("#throwbacks").hide();
+    return;
+  }
+
+  // otherwise show the throwbacks panel
+  $("#throwbacks").show();
+
+  // Clear existing throwbacks
+  $("#throwback-list").empty();
+
+  for (var i = 0; i < throwbackList.length; i++) {
+    var albumName = throwbackList[i].name;
+    var albumImageURL = throwbackList[i].image;
+    var albumArtist = throwbackList[i].artist;
+    var albumId = throwbackList[i].id; // Spotify album ID
+
+    var buttonSVG = '<svg role="img" height="24" width="24" viewBox="0 0 24 24" class="Svg-ytk21e-0 eqtHWV"><path d="M7.05 3.606l13.49 7.788a.7.7 0 010 1.212L7.05 20.394A.7.7 0 016 19.788V4.212a.7.7 0 011.05-.606z"></path></svg>';
+    var albumHTML =
+      "<div class='image'>" +
+      "<img src='" + albumImageURL + "'>" +
+      "<button class='play-button' data-album-id='" + albumId + 
+        "' data-name='" + albumName +
+        "' data-artist='" + albumArtist +
+        "' data-album-image='" + albumImageURL + "'>" + 
+        buttonSVG + "</button>" +
+      "</div>" +
+      "<div class='name'>" + albumName + "</div>" +
+      "<div class='more'>" +
+      "<span class='artist'>" + albumArtist + "</span>" +
+      "</div>";
+    var newAlbum = $("<div class='album'></div>").html(albumHTML);
+    $("#throwback-list").append(newAlbum);
+  }
+
+  // Add a single event listener for all play buttons using event delegation
+  $("#throwback-list").on('click', '.album', function () {
+    // Get the album id, name, artist, and image from the button's data attributes
+    var albumId = $(this).find('.play-button').data('album-id');
+    var albumName = $(this).find('.play-button').data('name');
+    var albumArtist = $(this).find('.play-button').data('artist');
+    var albumImageURL = $(this).find('.play-button').data('album-image');
+    // pass the album id, name, artist, and image
+    playAlbum(albumId, albumName, albumArtist, albumImageURL);
+  });
 }
 
 //
@@ -250,9 +425,12 @@ function showAlbums(data) {
 //
 
 // Function to play an album by its Spotify ID
-function playAlbum(albumId, albumImageURL) {
+function playAlbum(albumId, albumName, albumArtist, albumImageURL) {
   // Clear the playlist to start with an empty queue
   playlist = [];
+
+  // Save the album in recent albums
+  saveRecentAlbum(albumId, albumName, albumArtist, albumImageURL);
 
   // Use the Spotify API to fetch the album tracks and play them
   var albumTracksUrl = spotifyAlbumEndpoint + albumId + '/tracks';
@@ -300,7 +478,9 @@ function playPlaylist() {
     dropLen = playNeedleDrop();
     setTimeout(function() {
       playCurrentSong();
-      playCrackle();
+      if (crackleIsOn) {
+        playCrackle();
+      }
     }, dropLen-500);
   }, startTime);
 }
@@ -326,7 +506,8 @@ function playCurrentSong() {
     }
     playbackData = {
       position: 0,
-      time: new Date().getTime()
+      time: new Date().getTime(),
+      isPaused: false,
     };
     console.log(`Playing (spotify player): ${currentSong.title} by ${currentSong.artist}`);
     spotifyEmbedController.play();
@@ -354,7 +535,6 @@ cracklePlayer.src = effects.crackle[0].file;
 cracklePlayer.loop = true;
 
 window.onSpotifyIframeApiReady = (IFrameAPI) => {
-  console.log
   const element = document.getElementById('embed-iframe');
   const options = {
       uri: 'spotify:track:5TZZ1FqSZhWpLjUapdpG35',
@@ -372,7 +552,7 @@ window.onSpotifyIframeApiReady = (IFrameAPI) => {
 
   spotifyEmbedController.addListener('playback_update', e => {
     // document.getElementById('progressTimestamp').innerText = `${parseInt(e.data.position / 1000, 10)} s`;
-    console.log(e);
+    // console.log(e);
     // if we haven't started yet, do nothing
     if (e.data.duration == 0) {
       return;
@@ -387,12 +567,12 @@ window.onSpotifyIframeApiReady = (IFrameAPI) => {
     // if we pause, lift the needle
     else if (e.data.isPaused == true) {
       // play a needle lift sound
-      // playNeedleLift();
-      // stopCrackle();
+      playNeedleLift();
+      stopCrackle();
     }
     // TODO: Refine this logic
     // if we are not at the beginning of a song and we haven't scratched within the last second
-    else if (e.data.position > 2000) {
+    else if (e.data.position > scratchLeeway) {
       // check for a careless record scratch
       currentTime = new Date().getTime();
       // if we haven't scratched within the last two second
@@ -418,7 +598,8 @@ window.onSpotifyIframeApiReady = (IFrameAPI) => {
         // we record the playback data for the next update
         playbackData = {
           position: e.data.position,
-          time: new Date().getTime()
+          time: new Date().getTime(),
+          isPaused: e.data.isPaused,
         };
       };
     }
@@ -453,22 +634,50 @@ function playNeedleDrop() {
   return randomDrop.time;
 }
 
-// play a crackle sound
 function playCrackle() {
   console.log(`Playing (crackle player): ${effects.crackle[0].file}`);
   cracklePlayer.play();
 }
 
 function stopCrackle() {
+  console.log(`Stopping (crackle player): ${effects.crackle[0].file}`);
   cracklePlayer.pause();
+}
+
+function fadeInAudio(audioElement, duration) {
+  const targetVolume = 1; // Maximum volume (1.0)
+  cracklePlayer.volume = 0; // Set initial volume to 0 (mute)
+  cracklePlayer.play();
+  $(audioElement).animate({ volume: targetVolume }, duration);
+}
+
+function fadeOutAudio(audioElement, duration) {
+  const targetVolume = 0; // Mute (0.0)
+  $(audioElement).animate({ volume: targetVolume }, duration, function () {
+    // Callback function to pause the audio after fading out
+    audioElement.pause();
+  });
+}
+
+function fadeInCrackle() {
+  console.log(`Fading in (crackle player): ${effects.crackle[0].file}`);
+  fadeInAudio(cracklePlayer, fadeInOutTime);
+}
+
+function fadeOutCrackle() {
+  console.log(`Fading out (crackle player): ${effects.crackle[0].file}`);
+  fadeOutAudio(cracklePlayer, fadeInOutTime);
 }
 
 //
 // Control Buttons
 //
 
+// Attach click event listener to all buttons with class "control-button"
+$(".control-button").on("click", handleControlButton);
+
 // Function to handle button click
-function handleButtonClick() {
+function handleControlButton() {
   // Toggle "active" class on the clicked button
   $(this).toggleClass("active");
 
@@ -487,27 +696,19 @@ function handleButtonClick() {
         $(".search-field").blur();
       }
       break;
-    case "turntable":
-      // Code for the "turntable" button
-      if ($(this).hasClass("active")) {
-        // Hide albums panel
-        $("#album-panel").hide();
-        // Hide turntable-panel
-        $("#turntable-panel").show();
-      } else {
-        // Show albums panel
-        $("#album-panel").show();
-        // Show turntable-panel
-        $("#turntable-panel").hide();
-      }
-      break;
     case "crackle":
       // Code for the "crackle" button
       // Code for the "crackle" button
       if ($(this).hasClass("active")) {
-        isCrackleOn = false; // Set isCrackleOn to false
+        crackleIsOn = true;
+        // turn on crackle only if song is playing
+        if (!playbackData.isPaused) {
+          fadeInCrackle();
+        }
       } else {
-        isCrackleOn = true; // Set isCrackleOn to true
+        crackleIsOn = false;
+        // turn off crackle
+        fadeOutCrackle();
       }
       break;
     case "something":
@@ -518,8 +719,12 @@ function handleButtonClick() {
   }
 }
 
-// Attach click event listener to all buttons with class "control-button"
-$(".control-button").on("click", handleButtonClick);
+function goToSearch() {
+  // Add the "active" class to the "search" button
+  $(".control-button[data-ctr='search']").addClass("active");
+  // Focus on the search field
+  $(".search-field").focus();
+}
 
 // Add a blur event listener to the search input field
 $(".search-field").blur(function () {
@@ -527,11 +732,99 @@ $(".search-field").blur(function () {
   $(".control-button[data-ctr='search']").removeClass("active");
 });
 
-function showAlbumPanel() {
-  // Hide turntable-panel
-  $("#turntable-panel").hide();
+//
+// Panel Buttons
+
+// Attach click event listener to all buttons with class "control-button"
+$(".panel-button").on("click", handlePanelButton);
+
+// Function to handle button click
+function handlePanelButton() {
+  // These buttons are mutually exclusive,
+  // so we remove the "active" class from all panel buttons
+  $(".panel-button").removeClass("active");
+  // and hide all the panels
+  $(".main-panel").hide();
+  // Add "active" class on the clicked button
+  $(this).addClass("active");
+
+  // Get the value of the "data-ctr" attribute
+  var dataCtr = $(this).data("ctr");
+
+  // Perform actions based on the value of data-ctr
+  switch (dataCtr) {
+    case "home":
+      // Show home panel
+      $("#home-panel").show();
+      break;
+    case "albums":
+      // Show albums panel
+      $("#results-panel").show();
+      if (playlist.length == 0) {
+        goToSearch();
+      }
+      break;
+    case "turntable":
+      // Show turntable panel
+      $("#turntable-panel").show();
+      break;
+    default:
+      // Default case if data-ctr is not recognized
+  }
+}
+
+// We need a special case here since when wwe do a search
+// we want to show the albums panel
+function showResultsPanel() {
+  // Hide all main panels
+  $(".main-panel").hide();
+  // Remove active class from all panel buttons
+  $(".panel-button").removeClass("active");
   // Show albums panel
-  $("#album-panel").show();
-  // Remove the "active" class from the "turntable" button
-  $(".control-button[data-ctr='turntable']").removeClass("active");
+  $("#results-panel").show();
+  // Add active class to albums button
+  $(".panel-button[data-ctr='albums']").addClass("active");
+}
+
+//
+// Home Panel
+//
+
+function showHomePanel() {
+  // Hide all main panels
+  $(".main-panel").hide();
+  // Remove active class from all panel buttons
+  $(".panel-button").removeClass("active");
+  // Show home panel
+  $("#home-panel").show();
+  // Add active class to home button
+  $(".panel-button[data-ctr='home']").addClass("active");
+
+  // Depending on time of day, show a different message in .greeting-title
+  var now = new Date();
+  var hour = now.getHours();
+  var greetingTitle = "";
+  if (hour < 12) {
+    greetingTitle = "Good morning";
+  } else if (hour < 18) {
+    greetingTitle = "Good afternoon";
+  } else {
+    greetingTitle = "Good evening";
+  }
+  $(".greeting-title").text(greetingTitle);
+
+  // Show old albums 
+  updateThrowbacks();
+
+  // display a message if there are no recents, i.e, the user is brand new
+  if (recentsList.length == 0) {
+    // hide throwbacks
+    $("#throwbacks").hide();
+    // show #welcome
+    $("#welcome").show();
+  } else {
+    // otherwise, vise versa
+    $("#throwbacks").show();
+    $("#welcome").hide();
+  }
 }
