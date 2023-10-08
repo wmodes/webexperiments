@@ -2,6 +2,7 @@
 const spotifySearchEndpoint = 'https://api.spotify.com/v1/search';
 const spotifyAlbumEndpoint = 'https://api.spotify.com/v1/albums/';
 const spotifyTokenEndpoint = 'https://accounts.spotify.com/api/token';
+const redirectUri = 'https://wmodes.github.io/webexperiments/spotify/app.html'; // Your redirect uri
 const clientId = '873252498aa44a53a6e33c34d8b391b9'; // Your client id
 
 // Global variables to track playlist and current song index
@@ -104,39 +105,10 @@ function checkAndRenewAccessToken(accessToken) {
   return false; // Token is still valid
 }
 
-// Function to renew the access token without reloading the page
-function renewAccessToken() {
-  // Make an AJAX request to Spotify's token renewal endpoint
-  $.ajax({
-    url: spotifyTokenEndpoint, // Spotify's token renewal endpoint
-    method: 'POST',
-    headers: {
-      'Authorization': 'Basic ' + btoa(clientId + ':' + clientSecret) // Base64-encoded client ID and secret
-    },
-    data: {
-      'grant_type': 'refresh_token',
-      'refresh_token': refreshToken // Your stored refresh token
-    },
-    success: function(response) {
-      // Handle the successful response here
-      console.log('Access Token Renewed:', response.access_token);
-
-      // Update the accessToken object with the renewed token
-      accessToken.token = response.access_token;
-      accessToken.received = new Date().getTime(); // Update the received time
-    },
-    error: function(xhr, status, error) {
-      // Handle errors here
-      console.error('Error renewing access token:', error);
-    }
-  });
-}
+// Add an event listener to receive messages from the iframe when it loads
+const silentRefreshIframe = document.getElementById('silent-refresh-iframe');
 
 function renewAccessTokenSilently() {
-  const silentRefreshIframe = document.getElementById('silent-refresh-iframe');
-  const clientId = 'YOUR_CLIENT_ID'; // Replace with your client ID
-  const redirectUri = 'YOUR_REDIRECT_URI'; // Replace with your redirect URI
-
   // Construct the authorization URL for silent refresh
   const authorizationUrl = `https://accounts.spotify.com/authorize?response_type=token&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&prompt=none`;
 
@@ -144,17 +116,19 @@ function renewAccessTokenSilently() {
   silentRefreshIframe.src = authorizationUrl;
 }
 
-// Add an event listener to the iframe for when it loads (response received)
-$(document).ready(function () {
-  $('#silent-refresh-iframe').on('load', function () {
-    // Check the URL of the iframe to determine the response
-    const iframeUrl = $(this).prop('contentWindow').location.href;
-  
-    // Handle the response (e.g., extract tokens and update the session)
-    handleSilentRefreshResponse(iframeUrl);
-  });
-});
 
+silentRefreshIframe.addEventListener('load', function () {
+  // Check the URL of the iframe to determine the response
+  // Doesn't work because of CORS
+  const iframeUrl = silentRefreshIframe.contentWindow.location.href;
+
+  // // Instead, we use the postMessage API to send a message to the iframe
+  // // and receive the response
+  // silentRefreshIframe.contentWindow.postMessage('get-url', 'https://wmodes.github.io');
+
+  // Handle the response (e.g., extract tokens and update the session)
+  handleSilentRefreshResponse(iframeUrl);
+});
 
 // Function to handle the response from the silent refresh iframe
 function handleSilentRefreshResponse(iframeUrl) {
