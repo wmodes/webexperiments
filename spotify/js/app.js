@@ -14,6 +14,11 @@ let spotifyIframeAPI = null;
 let spotifyEmbedController = null;
 let playbackData = {};
 let lastScratchTime = 0;
+let isCrackleOn = true;
+
+// Some configuration
+const startTime = 2000;
+const endTime = 3000;
 
 let effects = {
   'scratch': [
@@ -171,6 +176,7 @@ function searchSpotify(query) {
       // Handle the successful response here
       console.log(response.albums);
       showAlbums(response.albums);
+      showAlbumPanel()
     },
     error: function (xhr, status, error) {
       // Handle errors here
@@ -296,7 +302,7 @@ function playPlaylist() {
       playCurrentSong();
       playCrackle();
     }, dropLen-500);
-  }, 2000);
+  }, startTime);
 }
 
 // queue current song, but pause for now
@@ -306,7 +312,7 @@ function queueFirstSong() {
     spotifyEmbedController.loadUri(currentSong.uri);
     spotifyEmbedController.pause();
     console.log(`Queuing: ${currentSong.title} by ${currentSong.artist}`);
-  } else {
+  } else if (playlist.length > 0) {
     console.log("End of playlist");
   }
 }
@@ -326,6 +332,10 @@ function playCurrentSong() {
     spotifyEmbedController.play();
   } else {
     console.log("End of playlist");
+    setTimeout(function() {
+      stopCrackle();
+      playNeedleLift();
+    }, endTime);
   }
 }
 
@@ -347,7 +357,7 @@ window.onSpotifyIframeApiReady = (IFrameAPI) => {
   console.log
   const element = document.getElementById('embed-iframe');
   const options = {
-      uri: 'spotify:track:574y1r7o2tRA009FW0LE7v',
+      uri: 'spotify:track:5TZZ1FqSZhWpLjUapdpG35',
       // uri: '',
       width: '100%',
       height: '90px',
@@ -362,18 +372,25 @@ window.onSpotifyIframeApiReady = (IFrameAPI) => {
 
   spotifyEmbedController.addListener('playback_update', e => {
     // document.getElementById('progressTimestamp').innerText = `${parseInt(e.data.position / 1000, 10)} s`;
-    // console.log(e);
+    console.log(e);
+    // if we haven't started yet, do nothing
+    if (e.data.duration == 0) {
+      return;
+    }
+    // if we are at the end of the song, play the next
     if (e.data.position >= e.data.duration - 1) {
       // Move to the next song in the playlist
       currentSongIndex++;
       // Play the next song
       playCurrentSong();
     }
+    // if we pause, lift the needle
     else if (e.data.isPaused == true) {
       // play a needle lift sound
       // playNeedleLift();
-      stopCrackle();
+      // stopCrackle();
     }
+    // TODO: Refine this logic
     // if we are not at the beginning of a song and we haven't scratched within the last second
     else if (e.data.position > 2000) {
       // check for a careless record scratch
@@ -397,6 +414,7 @@ window.onSpotifyIframeApiReady = (IFrameAPI) => {
             spotifyEmbedController.togglePlay();
           }, scratchLen);
         }
+        // TODO: Should recording playbackData be out of this loop?
         // we record the playback data for the next update
         playbackData = {
           position: e.data.position,
@@ -443,4 +461,77 @@ function playCrackle() {
 
 function stopCrackle() {
   cracklePlayer.pause();
+}
+
+//
+// Control Buttons
+//
+
+// Function to handle button click
+function handleButtonClick() {
+  // Toggle "active" class on the clicked button
+  $(this).toggleClass("active");
+
+  // Get the value of the "data-ctr" attribute
+  var dataCtr = $(this).data("ctr");
+
+  // Perform actions based on the value of data-ctr
+  switch (dataCtr) {
+    case "search":
+      // Code for the "search" button
+      if ($(this).hasClass("active")) {
+        // Focus on the search field
+        $(".search-field").focus();
+      } else {
+        // Remove the focus from the search field
+        $(".search-field").blur();
+      }
+      break;
+    case "turntable":
+      // Code for the "turntable" button
+      if ($(this).hasClass("active")) {
+        // Hide albums panel
+        $("#album-panel").hide();
+        // Hide turntable-panel
+        $("#turntable-panel").show();
+      } else {
+        // Show albums panel
+        $("#album-panel").show();
+        // Show turntable-panel
+        $("#turntable-panel").hide();
+      }
+      break;
+    case "crackle":
+      // Code for the "crackle" button
+      // Code for the "crackle" button
+      if ($(this).hasClass("active")) {
+        isCrackleOn = false; // Set isCrackleOn to false
+      } else {
+        isCrackleOn = true; // Set isCrackleOn to true
+      }
+      break;
+    case "something":
+      // Code for the "something" button
+      break;
+    default:
+      // Default case if data-ctr is not recognized
+  }
+}
+
+// Attach click event listener to all buttons with class "control-button"
+$(".control-button").on("click", handleButtonClick);
+
+// Add a blur event listener to the search input field
+$(".search-field").blur(function () {
+  // Remove the "active" class from the "search" button
+  $(".control-button[data-ctr='search']").removeClass("active");
+});
+
+function showAlbumPanel() {
+  // Hide turntable-panel
+  $("#turntable-panel").hide();
+  // Show albums panel
+  $("#album-panel").show();
+  // Remove the "active" class from the "turntable" button
+  $(".control-button[data-ctr='turntable']").removeClass("active");
 }
