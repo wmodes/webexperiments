@@ -817,7 +817,7 @@ function showHomePanel() {
   updateThrowbacks();
 
   // display a message if there are no recents, i.e, the user is brand new
-  if (recentsList.length == 0) {
+  if (throwbackList.length == 0) {
     // hide throwbacks
     $("#throwbacks").hide();
     // show #welcome
