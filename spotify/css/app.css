@@ -58,7 +58,7 @@ div, nav {
 
 /* desktop: natural flow; divided into two adjustable columns 
    starting with the first column at 20% of the screen width */
-#main-panel {
+#top-panel {
   display: flex;
   flex-direction: row;
   overflow: hidden;
@@ -82,15 +82,9 @@ div, nav {
 
 #control-panel {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   width: calc(100% - 50px);
-}
-
-.control-buttons {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center; /* Optional: Align items vertically in the center */
-  gap: 20px; /* Set the gap between flex items */
+  gap: 10px;
 }
 
 #recent-list {
@@ -186,13 +180,13 @@ div, nav {
  */
 
 
-#album-list {
+#results-list {
   display: grid;
   grid-gap: 24px;
   grid-template-columns: repeat(4,minmax(0,1fr));
 }
 
-#album-list>.album {
+#results-list>.album {
   -webkit-box-flex: 1;
   background: #181818;
   -ms-flex: 1;
@@ -204,29 +198,29 @@ div, nav {
   transition: background-color .3s ease;
 }
 
-#album-list>.album:hover {
+#results-list>.album:hover {
   background: #282828;
 }
 
-#album-list>.album {
+#results-list>.album {
   padding: 16px;
   transition: all 0.5s;
 }
 
-#album-list>.album:hover {
+#results-list>.album:hover {
   background: #282828;
 }
 
-#album-list>.album .image {
+#results-list>.album .image {
   position: relative;
   width: 100%;
 }
 
-#album-list>.album img {
+#results-list>.album img {
   width: 100%;
 }
 
-#album-list>.album .name {
+#results-list>.album .name {
   font-size: 1rem;
   font-weight: 700;
   overflow: hidden;
@@ -234,14 +228,14 @@ div, nav {
   white-space: nowrap;
 }
 
-#album-list>.album .more {
+#results-list>.album .more {
   margin-top: 10px;
   font-size: 0.875rem;
   color: #b3b3b3;
   font-weight: 400;
 }
 
-#album-list>.album button {
+#results-list>.album button {
   opacity: 0;
   pointer-events: auto;
   position: absolute;
@@ -265,12 +259,12 @@ div, nav {
   transition: all 0.5s;
 }
 
-#album-list>.album:hover button {
+#results-list>.album:hover button {
   opacity: 1;
   bottom: 8px;
 }
 
-#album-list>.album button:hover {
+#results-list>.album button:hover {
   background-color: #1fdf64;
   transform: scale(1.04);
 }
@@ -447,6 +441,10 @@ div, nav {
   left: 14px;
 }
 
+/* 
+  * SEARCH BAR
+  */
+
 .search-bar {
   flex: 0 1 364px;
   position: relative;
@@ -484,48 +482,244 @@ div, nav {
   outline: none;
 }
 
-.recents-title {
-  align-items: center;
+/*
+ * CONTROL PANEL
+ */
+
+.control-buttons, .panel-buttons {
   display: flex;
+  justify-content: flex-start;
+  align-items: center; /* Optional: Align items vertically in the center */
+  gap: 20px; /* Set the gap between flex items */
+}
+
+.control-button, .panel-button {
+  height: 24px;
+  width: 24px;
+  background-color: transparent;
+  border: 0;
   color: hsla(0,0%,100%,.7);
+  transition: color 3s;
+}
+
+.control-button.active, .panel-button.active {
+  color: #fff;
+  transition: color 3s;
+}
+
+.control-button svg, .panel-button svg  {
+  fill: currentColor;
+}
+
+button {
+  cursor: pointer;
+}
+
+button[data-ctr="albums"] {
+  margin-top: 2px;
+}
+
+
+button[data-ctr="turntable"] {
+  margin-top: -5px;
+}
+
+
+/* 
+  * RECENT ITEMS
+  */
+
+.recents-title {
+  align-items: center; /* Optional: Center vertically if needed */
+  display: flex;
+  color: hsla(0, 0%, 100%, .7);
   height: 32px;
   grid-gap: 8px;
   font-size: 0.875rem;
+  justify-content: flex-end; /* Shift elements to the right */
 }
 
 .down-arrow {
   fill: currentColor;
 }
 
-.control-button {
-  height: 24px;
-  width: 24px;
-  background-color: transparent;
-  border: 0;
-  color: hsla(0,0%,100%,.7);
+#recent-list {
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  height: auto;
+  padding: .5rem;
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: none;
+  gap: 10px;
 }
 
-.control-button svg  {
-  fill: currentColor;
+#recent-list::-webkit-scrollbar {
+  display: none;
 }
 
-.control-button.active {
+#recent-list .recent-item {
+  display: grid;
+  gap: 8px 12px;
+  grid-template-columns: auto 1fr;
+  grid-auto-rows: auto 1fr auto;
+}
+
+#recent-list .recent-item .recent-image {
+  width: 48px;
+  height: 48px;
+  margin-right: 8px;
+}
+
+#recent-list .recent-item .recent-image img {
+  width: 100%;
+  height: 100%;
+}
+
+#recent-list .recent-item .recent-item-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+#recent-list .recent-item .recent-name {
+  font-size: 1rem;
+  font-weight: 400;
+  font-family: var(--font-family,CircularSp,CircularSp-Arab,CircularSp-Hebr,CircularSp-Cyrl,CircularSp-Grek,CircularSp-Deva,var(--fallback-fonts,sans-serif));
+  color: var(--text-base,#000000);
+}
+
+#recent-list .recent-item .recent-artist {
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: var(--font-family,CircularSp,CircularSp-Arab,CircularSp-Hebr,CircularSp-Cyrl,CircularSp-Grek,CircularSp-Deva,var(--fallback-fonts,sans-serif));
+  color: var(--text-subdued,#6a6a6a);
+}
+
+#recent-list .recent-item {
+  cursor: pointer;
+}
+
+/*
+ * THROWBACK ITEMS
+ */
+
+.main-panel-title-2 {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   color: #fff;
+  text-decoration: none;
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-family: var(--font-family,CircularSpTitle,CircularSpTitle-Tall,CircularSp-Arab,CircularSp-Hebr,CircularSp-Cyrl,CircularSp-Grek,CircularSp-Deva,var(--fallback-fonts,sans-serif));
 }
 
-.control-button[data-ctr="search"] {
-  background-image: url('img/search.svg');
+
+#throwback-list {
+  display: grid;
+  grid-gap: 24px;
+  grid-template-columns: repeat(4,minmax(0,1fr));
 }
 
-.control-button[data-ctr="turntable"] {
-  background-image: url('img/turntable.png');
+#throwback-list>.album {
+  -webkit-box-flex: 1;
+  background: #181818;
+  -ms-flex: 1;
+  flex: 1;
+  isolation: isolate;
+  padding: 16px;
+  position: relative;
+  -webkit-transition: background-color .3s ease;
+  transition: background-color .3s ease;
 }
 
-.control-button[data-ctr="crackle"] {
-  background-image: url('img/crackle.png');
+#throwback-list>.album:hover {
+  background: #282828;
 }
 
-.control-button[data-ctr="mystery"] {
-  background-image: url('img/mystery.png');
+#throwback-list>.album {
+  padding: 16px;
+  transition: all 0.5s;
 }
 
+#throwback-list>.album:hover {
+  background: #282828;
+}
+
+#throwback-list>.album .image {
+  position: relative;
+  width: 100%;
+}
+
+#throwback-list>.album img {
+  width: 100%;
+}
+
+#throwback-list>.album .name {
+  font-size: 1rem;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#throwback-list>.album .more {
+  margin-top: 10px;
+  font-size: 0.875rem;
+  color: #b3b3b3;
+  font-weight: 400;
+}
+
+#throwback-list>.album button {
+  opacity: 0;
+  pointer-events: auto;
+  position: absolute;
+  right: 8px;
+  bottom: 0;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  vertical-align: baseline;
+  z-index: 1;
+  background-color: #1ed760;
+  color: #000;
+  border-radius: 500px;
+  min-block-size: 48px;
+  -webkit-box-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  justify-content: center;
+  inline-size: 48px;
+  block-size: 48px;
+  transition: all 0.5s;
+}
+
+#throwback-list>.album:hover button {
+  opacity: 1;
+  bottom: 8px;
+}
+
+#throwback-list>.album button:hover {
+  background-color: #1fdf64;
+  transform: scale(1.04);
+}
+
+#throwback-list .throwback-item {
+  cursor: pointer;
+}
+
+/*
+  * WECOME MESSAGE
+  */  
+
+#welcome {
+  background-color: #242424;
+  border: 0;
+  border-radius: 25px;
+  margin: 0 50px 0 50px;
+  padding: 0 30px 20px 30px
+}
