@@ -816,7 +816,7 @@ function showHomePanel() {
   // Show old albums 
   updateThrowbacks();
 
-  // display a message if there are no recents, i.e, the user is brand new
+  // display a message if there are no throwbacks, i.e, the user is relatively new
   if (throwbackList.length == 0) {
     // hide throwbacks
     $("#throwbacks").hide();
