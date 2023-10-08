@@ -80,6 +80,19 @@ div, nav {
   /* overflow: hidden; */
 }
 
+#control-panel {
+  display: flex;
+  flex-wrap: wrap;
+  width: calc(100% - 50px);
+}
+
+.control-buttons {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center; /* Optional: Align items vertically in the center */
+  gap: 20px; /* Set the gap between flex items */
+}
+
 #recent-list {
   overflow: auto;
   height: auto;
@@ -112,13 +125,38 @@ div, nav {
   background-color: #000;
 }
 
-#control-panel {
+#search-panel {
   position: sticky;
   top: 0; /* Adjust the top value as needed */
   background-color: #000; /* Add a background color if desired */
   height: 50px;
   width: 100%;
   z-index: 3; /* Ensure it's above the scrolling content */
+}
+
+.search-bar-cover {
+  align-items: center;
+  bottom: 0;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  left: 12px;
+  pointer-events: none;
+  position: absolute;
+  right: 12px;
+  top: 0;
+}
+
+.search-bar-logo-wrapper {
+  -webkit-box-flex: 1;
+  color: hsla(0,0%,100%,.7);
+  flex: 1;
+}
+
+.search-bar-logo {
+  display: block;
+  pointer-events: visible;
+  fill: currentColor;
 }
 
 /*
@@ -440,3 +478,54 @@ div, nav {
   font-family: var(--font-family,CircularSp,CircularSp-Arab,CircularSp-Hebr,CircularSp-Cyrl,CircularSp-Grek,CircularSp-Deva,var(--fallback-fonts,sans-serif));
   text-transform: none;
 }
+
+.search-bar input:focus {
+  box-shadow: 0 0 0 2px #fff;
+  outline: none;
+}
+
+.recents-title {
+  align-items: center;
+  display: flex;
+  color: hsla(0,0%,100%,.7);
+  height: 32px;
+  grid-gap: 8px;
+  font-size: 0.875rem;
+}
+
+.down-arrow {
+  fill: currentColor;
+}
+
+.control-button {
+  height: 24px;
+  width: 24px;
+  background-color: transparent;
+  border: 0;
+  color: hsla(0,0%,100%,.7);
+}
+
+.control-button svg  {
+  fill: currentColor;
+}
+
+.control-button.active {
+  color: #fff;
+}
+
+.control-button[data-ctr="search"] {
+  background-image: url('img/search.svg');
+}
+
+.control-button[data-ctr="turntable"] {
+  background-image: url('img/turntable.png');
+}
+
+.control-button[data-ctr="crackle"] {
+  background-image: url('img/crackle.png');
+}
+
+.control-button[data-ctr="mystery"] {
+  background-image: url('img/mystery.png');
+}
+
