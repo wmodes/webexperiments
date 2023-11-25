@@ -26,7 +26,7 @@ let crackleIsOn = true;
 // Some configuration
 const startTime = 2000;
 const endTime = 3000;
-const scratchLeeway = 5000;
+const scratchLeeway = 30000;
 const fadeInOutTime = 3000;
 const recentsLen = 12;
 const throwbackLen = 20;
@@ -576,13 +576,13 @@ window.onSpotifyIframeApiReady = (IFrameAPI) => {
       // check for a careless record scratch
       currentTime = new Date().getTime();
       // if we haven't scratched within the last two second
-      if (Math.abs(currentTime - lastScratchTime) > 2000) {
+      if (Math.abs(currentTime - lastScratchTime) > scratchLeeway) {
         // get the difference between the current time and the last time we recorded playback data
         timeDelta = Math.abs(currentTime - playbackData.time);
         posDelta = Math.abs(e.data.position - playbackData.position);
         // console.log(e.data.position, playbackData.position, timeDelta, posDelta, Math.abs(timeDelta - posDelta), e.data.isPaused);
         // if the two deltas are outside of a window defined by leeway
-        if (Math.abs(timeDelta - posDelta) > 2000) {
+        if (Math.abs(timeDelta - posDelta) > scratchLeeway) {
           // record time of scratch
           lastScratchTime = currentTime;
           // Randomly play a scratch sound
