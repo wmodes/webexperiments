@@ -11,8 +11,8 @@ $(document).ready(function() {
     
 async function run() {
   // load the models
-  await faceapi.loadMtcnnModel('/')
-  await faceapi.loadFaceRecognitionModel('/')
+  await faceapi.loadMtcnnModel('models/')
+  await faceapi.loadFaceRecognitionModel('models/')
   
   // try to access users webcam and stream the images
   // to the video element
