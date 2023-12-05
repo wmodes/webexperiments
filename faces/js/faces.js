@@ -30,3 +30,6 @@ const mtcnnForwardParams = {
 }
 
 const mtcnnResults = await faceapi.mtcnn(document.getElementById('inputVideo'), mtcnnForwardParams)
+
+faceapi.drawDetection('overlay', mtcnnResults.map(res => res.faceDetection), { withScore: false })
+faceapi.drawLandmarks('overlay', mtcnnResults.map(res => res.faceLandmarks), { lineWidth: 4, color: 'red' })
