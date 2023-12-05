@@ -11,8 +11,8 @@ $(document).ready(function() {
     
 async function run() {
   // load the models
-  await faceapi.loadMtcnnModel('models/')
-  await faceapi.loadFaceRecognitionModel('models/')
+  await faceapi.loadMtcnnModel('https://wmodes.github.io/webexperiments/faces/models/')
+  await faceapi.loadFaceRecognitionModel('https://wmodes.github.io/webexperiments/faces/models/')
   
   // try to access users webcam and stream the images
   // to the video element
@@ -40,16 +40,16 @@ const mtcnnForwardParams = {
   minFaceSize: 200
 }
 
-// const mtcnnResults = await faceapi.mtcnn(document.getElementById('inputVideo'), mtcnnForwardParams)
-
-// This should be in some loop?????
-// faceapi.drawDetection('overlay', mtcnnResults.map(res => res.faceDetection), { withScore: false })
-// faceapi.drawLandmarks('overlay', mtcnnResults.map(res => res.faceLandmarks), { lineWidth: 4, color: 'red' })
-
 async function onPlay(videoEl) {
   // run face detection & recognition
   // ...
   console.log("onPlay Loop");
+
+  const mtcnnResults = await faceapi.mtcnn(document.getElementById('inputVideo'), mtcnnForwardParams)
+  
+  // This should be in some loop?????
+  faceapi.drawDetection('overlay', mtcnnResults.map(res => res.faceDetection), { withScore: false })
+  faceapi.drawLandmarks('overlay', mtcnnResults.map(res => res.faceLandmarks), { lineWidth: 4, color: 'red' })
 
   setTimeout(() => onPlay(videoEl));
 }
