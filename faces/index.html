@@ -1,0 +1,24 @@
+<html>
+    <head>
+        <title>
+            Faces
+        </title>
+
+        <!-- Scripts -->
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+        <script src="lib/face-api.js"></script>
+        <script src="js/faces.js"></script>
+
+        <!-- Styles -->
+        <link rel="stylesheet" href="css/faces.css">
+    </head>
+    <body>
+        <main id=""content">
+            <h1>Faces</h1>
+            <div style="position: relative" class="margin">
+                <video onplay="onPlay(this)" id="inputVideo" autoplay muted></video>
+                <canvas id="overlay" />
+              </div>
+        </main>
+    </body>
+</html>
