@@ -40,7 +40,7 @@ const mtcnnForwardParams = {
   minFaceSize: 200
 }
 
-const mtcnnResults = await faceapi.mtcnn(document.getElementById('inputVideo'), mtcnnForwardParams)
+// const mtcnnResults = await faceapi.mtcnn(document.getElementById('inputVideo'), mtcnnForwardParams)
 
 // This should be in some loop?????
 // faceapi.drawDetection('overlay', mtcnnResults.map(res => res.faceDetection), { withScore: false })
