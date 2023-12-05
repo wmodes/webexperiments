@@ -11,8 +11,8 @@ $(document).ready(function() {
     
 async function run() {
   // load the models
-  await faceapi.loadMtcnnModel('models/')
-  await faceapi.loadFaceRecognitionModel('models/')
+  await faceapi.loadMtcnnModel('https://wmodes.github.io/webexperiments/faces/models/')
+  await faceapi.loadFaceRecognitionModel('https://wmodes.github.io/webexperiments/faces/models/')
   
   // try to access users webcam and stream the images
   // to the video element
@@ -23,3 +23,10 @@ async function run() {
     err => console.error(err)
   )
 }
+
+const mtcnnForwardParams = {
+  // limiting the search space to larger faces for webcam detection
+  minFaceSize: 200
+}
+
+const mtcnnResults = await faceapi.mtcnn(document.getElementById('inputVideo'), mtcnnForwardParams)
