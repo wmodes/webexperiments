@@ -4,20 +4,20 @@
             Faces
         </title>
 
+        <!-- Styles -->
+        <link rel="stylesheet" href="css/faces.css">
+
         <!-- Scripts -->
         <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
         <script src="lib/face-api.js"></script>
         <script src="js/faces.js" defer></script>
-
-        <!-- Styles -->
-        <link rel="stylesheet" href="css/faces.css">
     </head>
     <body>
         <main id=""content">
             <h1>Faces</h1>
-            <div style="position: relative" class="margin">
+            <div class="video-wrapper">
                 <video onplay="onPlay(this)" id="inputVideo" autoplay muted></video>
-                <canvas id="overlay" />
+                <canvas id="overlay">
               </div>
         </main>
     </body>
