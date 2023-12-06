@@ -14,6 +14,7 @@ async function run() {
   // await faceapi.loadMtcnnModel('https://wmodes.github.io/webexperiments/faces/models/')
   // await faceapi.loadFaceRecognitionModel('https://wmodes.github.io/webexperiments/faces/models/')
   await faceapi.nets.ssdMobilenetv1.loadFromUri('https://wmodes.github.io/webexperiments/faces/models/')
+  await faceapi.nets.faceLandmark68Net.loadFromUri('https://wmodes.github.io/webexperiments/faces/models/')
   
   // try to access users webcam and stream the images
   // to the video element
@@ -48,11 +49,21 @@ async function onPlay(videoEl) {
 
   // const mtcnnResults = await faceapi.mtcnn(document.getElementById('inputVideo'), mtcnnForwardParams)
   // Detect faces from https://github.com/justadudewhohacks/face-api.js/
-  const detections = await faceapi.detectAllFaces(document.getElementById('inputVideo'))
   
+  // get canvas dimensions
+  const displaySize = { width: videoEl.videoWidth, height: videoEl.videoHeight };
+
+  /* Display face landmarks */
+  const detections = await faceapi.detectAllFaces(videoEl).withFaceLandmarks();
+
   if (detections.length) {
-    faceapi.draw.drawDetections('overlay', mtcnnResults.map(res => res.faceDetection), { withScore: false })
-    // faceapi.drawFaceLandmarks('overlay', mtcnnResults.map(res => res.faceLandmarks), { lineWidth: 4, color: 'red' })
+    // resize the detected boxes in case your displayed image has a different size than the original
+    const resizedDetections = faceapi.resizeResults(detections, displaySize)
+
+    // draw detections into the canvas
+    faceapi.draw.drawDetections(canvas, resizedDetections)
+    // draw the landmarks into the canvas
+    faceapi.draw.drawFaceLandmarks(canvas, resizedDetections)
   }
 
   setTimeout(() => onPlay(videoEl));
