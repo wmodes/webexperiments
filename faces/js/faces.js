@@ -51,19 +51,21 @@ async function onPlay(videoEl) {
   // Detect faces from https://github.com/justadudewhohacks/face-api.js/
   
   // get canvas dimensions
-  const displaySize = { width: videoEl.videoWidth, height: videoEl.videoHeight };
+  // const displaySize = { width: videoEl.videoWidth, height: videoEl.videoHeight };
+  const displaySize = { width: 800, height: 600 };
+  const canvasEl = document.getElementById('overlay')
 
   /* Display face landmarks */
-  const detections = await faceapi.detectAllFaces(videoEl).withFaceLandmarks();
+  const detections = await faceapi.detectAllFaces(videoEl) //.withFaceLandmarks();
 
   if (detections.length) {
     // resize the detected boxes in case your displayed image has a different size than the original
     const resizedDetections = faceapi.resizeResults(detections, displaySize)
 
     // draw detections into the canvas
-    faceapi.draw.drawDetections(canvas, resizedDetections)
-    // draw the landmarks into the canvas
-    faceapi.draw.drawFaceLandmarks(canvas, resizedDetections)
+    faceapi.draw.drawDetections(canvasEl, resizedDetections)
+    // // draw the landmarks into the canvas
+    // faceapi.draw.drawFaceLandmarks(canvasEl, resizedDetections)
   }
 
   setTimeout(() => onPlay(videoEl));
