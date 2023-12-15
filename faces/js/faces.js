@@ -46,15 +46,15 @@ $(document).ready(function() {
     // const mtcnnResults = await faceapi.mtcnn(document.getElementById('inputVideo'), mtcnnForwardParams)
     // Detect faces from https://github.com/justadudewhohacks/face-api.js/
 
-    // Clear the entire canvas before drawing the new bounding box
-    ctx.clearRect(0, 0, videoWidth, videoHeight);
-
     /* Display face landmarks */
     const detections = await faceapi.detectAllFaces(videoEl).withFaceLandmarks();
 
     if (detections.length) {
       // resize the detected boxes in case your displayed image has a different size than the original
       const resizedDetections = faceapi.resizeResults(detections, displaySize)
+
+      // Clear the entire canvas before drawing the new bounding box
+      ctx.clearRect(0, 0, videoWidth, videoHeight);
 
       // draw detections into the canvas
       faceapi.draw.drawDetections(canvasEl, resizedDetections)
