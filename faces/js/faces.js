@@ -25,9 +25,9 @@ $(document).ready(function() {
     // load the models
     // await faceapi.loadMtcnnModel('https://wmodes.github.io/webexperiments/faces/models/')
     // await faceapi.loadFaceRecognitionModel('https://wmodes.github.io/webexperiments/faces/models/')
-    await faceapi.nets.ssdMobilenetv1.loadFromUri('https://wmodes.github.io/webexperiments/faces/models/')
-    await faceapi.nets.faceLandmark68Net.loadFromUri('https://wmodes.github.io/webexperiments/faces/models/')
-    await faceapi.nets.tinyFaceDetector.loadFromUri('https://wmodes.github.io/webexperiments/faces/models/')
+    // await faceapi.nets.ssdMobilenetv1.loadFromUri('https://wmodes.github.io/webexperiments/faces/models/')
+    // await faceapi.nets.faceLandmark68Net.loadFromUri('https://wmodes.github.io/webexperiments/faces/models/')
+    await faceapi.nets.faceLandmark68TinyNet.loadFromUri('https://wmodes.github.io/webexperiments/faces/models/')
     await faceapi.nets.tinyFaceDetector.loadFromUri('https://wmodes.github.io/webexperiments/faces/models/')
     
     // try to access users webcam and stream the images
@@ -50,7 +50,8 @@ $(document).ready(function() {
 
     /* Display face landmarks */
     useTinyModel = true
-    const detections = await faceapi.detectAllFaces(videoEl).withFaceLandmarks(useTinyModel);
+    const detections = await faceapi.detectAllFaces(videoEl, new faceapi.TinyFaceDetectorOptions())
+    .withFaceLandmarks(useTinyModel);
 
     if (detections.length) {
       // resize the detected boxes in case your displayed image has a different size than the original
