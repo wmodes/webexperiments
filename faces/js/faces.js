@@ -27,6 +27,8 @@ $(document).ready(function() {
     // await faceapi.loadFaceRecognitionModel('https://wmodes.github.io/webexperiments/faces/models/')
     await faceapi.nets.ssdMobilenetv1.loadFromUri('https://wmodes.github.io/webexperiments/faces/models/')
     await faceapi.nets.faceLandmark68Net.loadFromUri('https://wmodes.github.io/webexperiments/faces/models/')
+    await faceapi.nets.tinyFaceDetector.loadFromUri('https://wmodes.github.io/webexperiments/faces/models/')
+    await faceapi.nets.tinyFaceDetector.loadFromUri('https://wmodes.github.io/webexperiments/faces/models/')
     
     // try to access users webcam and stream the images
     // to the video element
@@ -47,7 +49,8 @@ $(document).ready(function() {
     // Detect faces from https://github.com/justadudewhohacks/face-api.js/
 
     /* Display face landmarks */
-    const detections = await faceapi.detectAllFaces(videoEl).withFaceLandmarks();
+    useTinyModel = true
+    const detections = await faceapi.detectAllFaces(videoEl).withFaceLandmarks(useTinyModel);
 
     if (detections.length) {
       // resize the detected boxes in case your displayed image has a different size than the original
