@@ -50,7 +50,7 @@ $(document).ready(function() {
     ctx.clearRect(0, 0, videoWidth, videoHeight);
 
     /* Display face landmarks */
-    const detections = await faceapi.detectAllFaces(videoEl) //.withFaceLandmarks();
+    const detections = await faceapi.detectAllFaces(videoEl).withFaceLandmarks();
 
     if (detections.length) {
       // resize the detected boxes in case your displayed image has a different size than the original
@@ -58,8 +58,8 @@ $(document).ready(function() {
 
       // draw detections into the canvas
       faceapi.draw.drawDetections(canvasEl, resizedDetections)
-      // // draw the landmarks into the canvas
-      // faceapi.draw.drawFaceLandmarks(canvasEl, resizedDetections)
+      // draw the landmarks into the canvas
+      faceapi.draw.drawFaceLandmarks(canvasEl, resizedDetections)
     }
 
     setTimeout(() => onPlay(videoEl));
