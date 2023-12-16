@@ -10,8 +10,8 @@ $(document).ready(function() {
   // useful globals
   const videoEl = document.getElementById('input-video');
   const canvasEl = document.getElementById('canvas');
-  const videoWidth = $(videoEl).width();
-  const videoHeight = $(videoEl).height();
+  const videoWidth = $("#canvas").width();
+  const videoHeight = $("#canvas").height();
   const displaySize = { width: videoWidth, height: videoHeight };
 
   // starting things up
