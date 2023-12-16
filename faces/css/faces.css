@@ -1,9 +1,27 @@
 
+document, body {
+  margin: 0;
+  padding: 0;
+} 
+
 .video-wrapper {
   position: relative;
   border: solid 1px red;
-  width: 800px;
-  height: 600px;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.video-wrapper video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* Maintain aspect ratio and cover entire container */
+  object-fit: cover; 
+  /* mirror video - flip left to right */
+  transform: scaleX(-1);
 }
 
 .video-wrapper video,
@@ -11,8 +29,8 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%; 
+  width: 100vw;
+  height: 100vh; 
 }
 
 .video-wrapper canvas {
