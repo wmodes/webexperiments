@@ -10,14 +10,12 @@ $(document).ready(function() {
   // useful globals
   const videoEl = document.getElementById('input-video');
   const canvasEl = document.getElementById('canvas');
-  const videoWidth = $("#canvas").width();
-  const videoHeight = $("#canvas").height();
-  const displaySize = { width: videoWidth, height: videoHeight };
+  const displayWidth = $("#canvas").width();
+  const displayHeight = $("#canvas").height();
+  const displaySize = { width: displayWidth, height: displayHeight };
 
   // starting things up
   //
-  // resize the canvas canvas to the input dimensions
-  faceapi.matchDimensions(canvasEl, displaySize)
   // get a canvas context
   const ctx = canvasEl.getContext('2d');
 
@@ -46,8 +44,13 @@ $(document).ready(function() {
     // ...
     // console.log("onPlay Loop");
 
-    // const mtcnnResults = await faceapi.mtcnn(document.getElementById('input-video'), mtcnnForwardParams)
-    // Detect faces from https://github.com/justadudewhohacks/face-api.js/
+    const displayWidth = $("#input-video").width();
+    const displayHeight = $("#input-video").height();
+    const displaySize = { width: displayWidth, height: displayHeight };
+    // console.log("displaySize:", displaySize);
+
+    // resize the canvas canvas to the input dimensions
+    faceapi.matchDimensions(canvasEl, displaySize, true)
 
     /* Detect faces and landmarks */
     useTinyModel = true
@@ -59,7 +62,7 @@ $(document).ready(function() {
       const resizedDetections = faceapi.resizeResults(detections, displaySize);
 
       // Clear the entire canvas before drawing the new bounding box
-      ctx.clearRect(0, 0, videoWidth, videoHeight);
+      ctx.clearRect(0, 0, displayWidth, displayHeight);
 
       // draw detections into the canvas
       // faceapi.draw.drawDetections(canvasEl, resizedDetections)
@@ -160,15 +163,65 @@ $(document).ready(function() {
     }
   }
 
+  function resizeVideoAndCanvas() {
+    console.log("resizing video and canvas");
+    var $wrapper = $('.wrapper');
+    var $video = $('#input-video');
+    var $canvas = $('#canvas');
+
+    var videoWidth = $video.width();
+    var videoHeight = $video.height();
+    var wrapperWidth = $wrapper.width();
+    var wrapperHeight = $wrapper.height();
+
+    var videoAspectRatio = videoWidth / videoHeight;
+    var wrapperAspectRatio = wrapperWidth / wrapperHeight;
+
+    if (videoAspectRatio < wrapperAspectRatio) {
+        // Video is wider than the wrapper
+        var videoHeightNew = wrapperWidth / videoAspectRatio;
+        $video.css({
+          'width': 'auto',
+          'height': videoHeightNew + 'px'
+      });
+        $canvas.css({
+          'width': '100%',
+          'height': videoHeightNew + 'px'
+      });
+    } else {
+        // Video is narrower than the wrapper
+        var videoWidthNew = wrapperHeight * videoAspectRatio;
+        $video.css({
+          'width': videoWidthNew + 'px',
+          'height': 'auto'
+      });
+        $canvas.css({
+          'width': videoWidthNew + 'px',
+          'height': '100%'
+      });
+    }
+}
+
+
+  // Attach event listener for window resize
+  $(window).on('resize', function() {
+    resizeVideoAndCanvas(); // Call the function on window resize
+  });
+
   // let's get this party started
   //
-  // get canvas dimensions
-  // const displaySize = { width: videoEl.videoWidth, height: videoEl.videoHeight };
-  // const displaySize = { width: 800, height: 600 };
+  // resize canvas and video
+  resizeVideoAndCanvas()
+  // run the app
   run()
   $('#input-video').on('play', function() {
     // Call the onPlay function when the video starts playing
     onPlay(this);
+  });
+
+  // Attach event listener for window resize
+  $(window).on('resize', function() {
+      resizeVideoAndCanvas(); // Call the function on window resize
   });
 
 })
