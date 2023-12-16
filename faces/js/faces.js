@@ -8,15 +8,15 @@
 $(document).ready(function() {
 
   // useful globals
-  const videoEl = document.getElementById('inputVideo');
-  const canvasEl = document.getElementById('overlay');
+  const videoEl = document.getElementById('input-video');
+  const canvasEl = document.getElementById('canvas');
   const videoWidth = $(videoEl).width();
   const videoHeight = $(videoEl).height();
   const displaySize = { width: videoWidth, height: videoHeight };
 
   // starting things up
   //
-  // resize the overlay canvas to the input dimensions
+  // resize the canvas canvas to the input dimensions
   faceapi.matchDimensions(canvasEl, displaySize)
   // get a canvas context
   const ctx = canvasEl.getContext('2d');
@@ -46,7 +46,7 @@ $(document).ready(function() {
     // ...
     // console.log("onPlay Loop");
 
-    // const mtcnnResults = await faceapi.mtcnn(document.getElementById('inputVideo'), mtcnnForwardParams)
+    // const mtcnnResults = await faceapi.mtcnn(document.getElementById('input-video'), mtcnnForwardParams)
     // Detect faces from https://github.com/justadudewhohacks/face-api.js/
 
     /* Detect faces and landmarks */
@@ -85,7 +85,7 @@ $(document).ready(function() {
     detectionsArray.forEach(function (det) {
       // console.log("det:", det);
       // get the width of the canvas
-      const canvasWidth = $("#overlay").width();
+      const canvasWidth = $("#canvas").width();
       // get the box coordinates
       var box = det.detection.box;
       var x = canvasWidth - box.x - box.width;
@@ -150,7 +150,7 @@ $(document).ready(function() {
 
   function mirror(p) {
     // get the canvas width
-    const canvasWidth = $("#overlay").width();
+    const canvasWidth = $("#canvas").width();
     // if p is an object, flip the x coordinate
     // console.log("original p:", p);
     if (typeof p === 'object') {
@@ -166,7 +166,7 @@ $(document).ready(function() {
   // const displaySize = { width: videoEl.videoWidth, height: videoEl.videoHeight };
   // const displaySize = { width: 800, height: 600 };
   run()
-  $('#inputVideo').on('play', function() {
+  $('#input-video').on('play', function() {
     // Call the onPlay function when the video starts playing
     onPlay(this);
   });
