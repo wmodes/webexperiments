@@ -20,6 +20,7 @@ $(document).ready(function() {
   faceapi.matchDimensions(canvasEl, displaySize)
   // get a canvas context
   const ctx = canvasEl.getContext('2d');
+
     
   async function run() {
     // load the models
@@ -48,25 +49,115 @@ $(document).ready(function() {
     // const mtcnnResults = await faceapi.mtcnn(document.getElementById('inputVideo'), mtcnnForwardParams)
     // Detect faces from https://github.com/justadudewhohacks/face-api.js/
 
-    /* Display face landmarks */
+    /* Detect faces and landmarks */
     useTinyModel = true
     const detections = await faceapi.detectAllFaces(videoEl, new faceapi.TinyFaceDetectorOptions())
     .withFaceLandmarks(useTinyModel);
 
     if (detections.length) {
       // resize the detected boxes in case your displayed image has a different size than the original
-      const resizedDetections = faceapi.resizeResults(detections, displaySize)
+      const resizedDetections = faceapi.resizeResults(detections, displaySize);
 
       // Clear the entire canvas before drawing the new bounding box
       ctx.clearRect(0, 0, videoWidth, videoHeight);
 
       // draw detections into the canvas
-      faceapi.draw.drawDetections(canvasEl, resizedDetections)
+      // faceapi.draw.drawDetections(canvasEl, resizedDetections)
+      drawFaces(canvasEl, resizedDetections);
       // draw the landmarks into the canvas
-      faceapi.draw.drawFaceLandmarks(canvasEl, resizedDetections)
+      // faceapi.draw.drawFaceLandmarks(canvasEl, resizedDetections)
     }
 
     setTimeout(() => onPlay(videoEl));
+  }
+
+  function drawFaces(canvasEl, detections) {
+    // get the canvas context
+    const ctx = canvasEl.getContext('2d');
+    // Set properties for the rectangle
+    ctx.lineWidth = 2; // Set the border width
+    ctx.strokeStyle = 'white'; // Set the border color
+    // go through each detection and draw corresponding bounding box 
+    // Here's the fields of the detection that are used when drawing a box:
+    //     var isBbox = [box.left, box.top, box.right, box.bottom].every(isValidNumber);
+    //     var isRect = [box.x, box.y, box.width, box.height].every(isValidNumber);
+    var detectionsArray = Array.isArray(detections) ? detections : [detections];
+    detectionsArray.forEach(function (det) {
+      // console.log("det:", det);
+      // get the width of the canvas
+      const canvasWidth = $("#overlay").width();
+      // get the box coordinates
+      var box = det.detection.box;
+      var x = canvasWidth - box.x - box.width;
+      var y = box.y;
+      var w = box.width;
+      var h = box.height;
+      // Draw an unfilled rectangle (x, y, width, height)
+      ctx.strokeRect(x, y, w, h);
+
+      // check if we have landmarks
+      if (det.hasOwnProperty('landmarks')) {
+        // Here's the points that make up the left and right eyes:
+        //     FaceLandmarks68.prototype.getLeftEye = function () {
+        //       return this.positions.slice(36, 42);
+        //     };
+        //     FaceLandmarks68.prototype.getRightEye = function () {
+        //         return this.positions.slice(42, 48);
+        //     };
+        // get the landmarks
+        var positions = det.landmarks.positions;
+        var leftEye1 = mirror(positions[36]);
+        var leftEye2 = mirror(positions[39]);
+        var rightEye1 = mirror(positions[42]);
+        var rightEye2 = mirror(positions[45]);
+        // console.log("leftEye1:", leftEye1, "leftEye2:", leftEye2, "rightEye1:", rightEye1, "rightEye2:", rightEye2)
+
+        // Calculate center point coordinates for left eye
+        var leftCenterX = (leftEye1.x + leftEye2.x) / 2;
+        var leftCenterY = (leftEye1.y + leftEye2.y) / 2;
+        // Calculate the distance between two points to determine the radius of the circle
+        var leftRadius = Math.sqrt(Math.pow(leftEye1.x - leftEye2.x, 2) + Math.pow(leftEye1.y - leftEye2.y, 2)) / 2;
+
+        // Calculate center point coordinates for left eye
+        var rightCenterX = (rightEye1.x + rightEye2.x) / 2;
+        var rightCenterY = (rightEye1.y + rightEye2.y) / 2;
+        // Calculate the distance between two points to determine the radius of the circle
+        var rightRadius = Math.sqrt(Math.pow(rightEye1.x - rightEye2.x, 2) + Math.pow(rightEye1.y - rightEye2.y, 2)) / 2;
+
+        // Calculate bindi
+        var bindiX = (leftCenterX + rightCenterX) / 2;
+        var bindiY = (leftCenterY + rightCenterY) / 2;
+        // bindi radius is the average of the left and right eye radius
+        var bindiRadius = (leftRadius + rightRadius) / 2;
+
+        // Draw the left eye
+        ctx.beginPath();
+        ctx.arc(leftCenterX, leftCenterY, leftRadius, 0, 2 * Math.PI);
+        ctx.stroke();
+
+        // Draw the right eye
+        ctx.beginPath();
+        ctx.arc(rightCenterX, rightCenterY, rightRadius, 0, 2 * Math.PI);
+        ctx.stroke();
+
+        // Draw the bindi 
+        ctx.beginPath();
+        ctx.arc(bindiX, bindiY, bindiRadius, 0, 2 * Math.PI);
+        ctx.stroke();
+      }
+    });
+  }
+
+  function mirror(p) {
+    // get the canvas width
+    const canvasWidth = $("#overlay").width();
+    // if p is an object, flip the x coordinate
+    // console.log("original p:", p);
+    if (typeof p === 'object') {
+      p._x = canvasWidth - p._x;
+      // console.log("flipped p:", p);
+      return p;
+    }
   }
 
   // let's get this party started
