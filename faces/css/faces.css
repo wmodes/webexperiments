@@ -4,15 +4,15 @@ document, body {
   padding: 0;
 } 
 
-.video-wrapper {
+.wrapper {
   position: relative;
   border: solid 1px red;
   width: 100vw;
   height: 100vh;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
-.video-wrapper video {
+.wrapper video {
   position: absolute;
   top: 0;
   left: 0;
@@ -21,18 +21,31 @@ document, body {
   /* Maintain aspect ratio and cover entire container */
   object-fit: cover; 
   /* mirror video - flip left to right */
-  transform: scaleX(-1);
+  /* transform: scaleX(-1); */
 }
 
-.video-wrapper video,
-.video-wrapper canvas {
+.wrapper video,
+.wrapper canvas {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh; 
+  /* center the element */
+  left: 50%;
+  top: 50%;
+  /* transform: translate(-50%, -50%) scaleX(-1); */
+  /* initial values here will be reset by js */
+  /* top: 0; */
+  /* left: 0; */
+  /* width: 100vw; */
+  /* height: 100vh;  */
 }
 
-.video-wrapper canvas {
+.wrapper video {
+  transform: translate(-50%, -50%) scaleX(-1);
+}
+
+.wrapper canvas {
+  transform: translate(-50%, -50%);
+}
+
+.wrapper canvas {
   border: solid 1px orange;
 }
