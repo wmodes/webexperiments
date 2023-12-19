@@ -44,8 +44,8 @@ $(document).ready(function() {
     // ...
     // console.log("onPlay Loop");
 
-    const displayWidth = $("#input-video").width();
-    const displayHeight = $("#input-video").height();
+    const displayWidth = $("#canvas").width();
+    const displayHeight = $("#canvas").height();
     const displaySize = { width: displayWidth, height: displayHeight };
     // console.log("displaySize:", displaySize);
 
@@ -54,8 +54,8 @@ $(document).ready(function() {
 
     /* Detect faces and landmarks */
     useTinyModel = true
-    const detections = await faceapi.detectAllFaces(videoEl, new faceapi.TinyFaceDetectorOptions())
-    .withFaceLandmarks(useTinyModel);
+    const detections = await faceapi.detectAllFaces(videoEl, new faceapi.TinyFaceDetectorOptions());
+    // .withFaceLandmarks(useTinyModel);
 
     if (detections.length) {
       // resize the detected boxes in case your displayed image has a different size than the original
@@ -86,17 +86,33 @@ $(document).ready(function() {
     //     var isRect = [box.x, box.y, box.width, box.height].every(isValidNumber);
     var detectionsArray = Array.isArray(detections) ? detections : [detections];
     detectionsArray.forEach(function (det) {
-      // console.log("det:", det);
+      console.log("detection:", det);
       // get the width of the canvas
       const canvasWidth = $("#canvas").width();
       // get the box coordinates
-      var box = det.detection.box;
+      var box = det.box;
       var x = canvasWidth - box.x - box.width;
       var y = box.y;
       var w = box.width;
       var h = box.height;
+      // Calculate Bindi X and Y
+      var bindiX = x + w / 2; // Halfway across the width of the box
+      var bindiY = y + h / 4; // A quarter way down the height of the box
+
+      // Draw a + over the bindiRadius
+      plusSize=h/16;
+      // Draw horizontal line
+      ctx.beginPath(); // Start a new path
+      ctx.moveTo(bindiX - plusSize / 2, bindiY); // Move to the start point of the horizontal line
+      ctx.lineTo(bindiX + plusSize / 2, bindiY); // Draw the line to the end point
+      ctx.stroke(); // Render the line
+      // Draw vertical line
+      ctx.moveTo(bindiX, bindiY - plusSize / 2); // Move to the start point of the vertical line
+      ctx.lineTo(bindiX, bindiY + plusSize / 2); // Draw the line to the end point
+      ctx.stroke(); // Render the line
+
       // Draw an unfilled rectangle (x, y, width, height)
-      ctx.strokeRect(x, y, w, h);
+      // ctx.strokeRect(x, y, w, h);
 
       // check if we have landmarks
       if (det.hasOwnProperty('landmarks')) {
@@ -200,18 +216,15 @@ $(document).ready(function() {
           'height': '100%'
       });
     }
-}
+  }
 
-
-  // Attach event listener for window resize
-  $(window).on('resize', function() {
-    resizeVideoAndCanvas(); // Call the function on window resize
-  });
+  // Attach event listener for window resize - don't need this
+  // $(window).on('resize', function() {
+  //   resizeVideoAndCanvas(); // Call the function on window resize
+  // });
 
   // let's get this party started
   //
-  // resize canvas and video
-  resizeVideoAndCanvas()
   // run the app
   run()
   $('#input-video').on('play', function() {
