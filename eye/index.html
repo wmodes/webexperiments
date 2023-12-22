@@ -3,13 +3,18 @@
 <head>
     <title>The Eye</title>
     <link rel="stylesheet" type="text/css" href="css/eye.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script src="js/eye.js" defer></script>
+    <script src="lib/face-api.js"></script>
+    <script src="js/eye2.js" defer></script>
  
 </head>
 <body>
     <div id="content">
+        <div class="wrapper">
+            <video id="input-video" autoplay muted></video>
+            <canvas id="canvas">
+        </div>
         <div id="eye">
           <div id="iris">
             <img src="img/iris-handdrawn.png" alt="iris" />

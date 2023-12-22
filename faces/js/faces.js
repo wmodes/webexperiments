@@ -56,6 +56,7 @@ $(document).ready(function() {
     useTinyModel = true
     const detections = await faceapi.detectAllFaces(videoEl, new faceapi.TinyFaceDetectorOptions());
     // .withFaceLandmarks(useTinyModel);
+    console.log("detections:", detections);
 
     if (detections.length) {
       // resize the detected boxes in case your displayed image has a different size than the original
