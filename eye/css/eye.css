@@ -31,6 +31,7 @@
     left: 0;
     max-width: 100%; /* Element won't exceed the container's width */
     max-height: 100%; /* Element won't exceed the container's height */ 
+    background-color: white;
   }
 
   #eye>* {
@@ -56,4 +57,37 @@
 
 .get-wiggly {
   animation: wiggle 0.5s ease infinite;
+}
+
+.wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh; 
+  overflow: hidden;
+}
+
+/* The video can be full width but not cover the screen, because we hide it behind the scenes */
+.wrapper video{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  max-width: 640px;
+  max-height: 400px;
+  /* We don't even have to mirror is, because it's hidden and we mirror the canvas coordinates. */
+  /* transform: scaleX(-1); */
+  border: solid 1px red;
+}
+
+/* The canvas should cover the screen  */
+.wrapper canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh; 
+  border: solid 1px orange;
 }
