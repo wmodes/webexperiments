@@ -65,7 +65,7 @@ class Faces {
     this.displaySize = { width: $(this.canvasEl).width(), height: $(this.canvasEl).height() };
     this.currentFaces = [];
     // Timestamp of the last face update
-    this.lastFaceUpdate = 0;
+    this.lastFaceUpdate = 0;  
   }
 
   run() {
@@ -82,11 +82,17 @@ class Faces {
   }
 
   async startVideo() {
-    // Start video stream
-    navigator.getUserMedia({ video: {} },
-      stream => this.videoEl.srcObject = stream,
-      err => console.error(err)
-    );
+    this.showCameraAccessModal(); // Show the modal before requesting camera access
+
+    // Request camera access
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      this.videoEl.srcObject = stream;
+      this.hideCameraAccessModal(); // Hide the modal on successful access
+    } catch (err) {
+      console.error("Camera access was denied or an error occurred:", err);
+      // Handle the error, maybe update the modal with an error message
+    }
   }
 
   async onPlay() {
@@ -99,7 +105,7 @@ class Faces {
     // Detect faces and landmarks
     const detections = await faceapi.detectAllFaces(this.videoEl, new faceapi.TinyFaceDetectorOptions());
     const now = Date.now();
-    
+
     if (detections.length) {
       // Clear the current faces
       this.currentFaces = [];
@@ -185,6 +191,18 @@ class Faces {
     this.ctx.rect(topLeftX, topLeftY, faceRecord.width, faceRecord.height);
     this.ctx.stroke();
   }
+
+  // Method to show the camera access modal
+  showCameraAccessModal() {
+    // Assuming you have a modal with a specific ID or class
+    $("#modal").show();
+  }
+
+  // Method to hide the camera access modal
+  hideCameraAccessModal() {
+    $("#modal").hide();
+  }
+
 }
 
 /**
@@ -483,16 +501,14 @@ class Eye {
 }
 
 // Document ready
-// $(document).ready(function() {
+$(document).ready(function() {
 
   const faceApp = new Faces();
   faceApp.run();
 
-  // Usage
   const eyeApp = new Eye(faceApp);
   eyeApp.run();
-  // myEye.moveIrisRandomly();
-// });
+});
 
 
 
