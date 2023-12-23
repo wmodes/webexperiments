@@ -9,6 +9,8 @@ const FACE_HTML_ELEMENT = "input-video";
 const CANVAS_HTML_ELEMENT = "canvas";
 // how often we track face
 const TRACK_INTERVAL = 100; // milliseconds
+// how long we wait before clearning face list
+const CLEAR_FACE_LIST_DELAY = 1000; // milliseconds
 // how often we move eye
 const MOVE_INTERVAL = 300; // milliseconds
 // how fast we move to new eye position
@@ -62,6 +64,8 @@ class Faces {
     this.ctx = this.canvasEl.getContext('2d');
     this.displaySize = { width: $(this.canvasEl).width(), height: $(this.canvasEl).height() };
     this.currentFaces = [];
+    // Timestamp of the last face update
+    this.lastFaceUpdate = 0;
   }
 
   run() {
@@ -94,12 +98,18 @@ class Faces {
 
     // Detect faces and landmarks
     const detections = await faceapi.detectAllFaces(this.videoEl, new faceapi.TinyFaceDetectorOptions());
+    const now = Date.now();
+    
     if (detections.length) {
       // Clear the current faces
       this.currentFaces = [];
       const resizedDetections = faceapi.resizeResults(detections, this.displaySize);
       this.ctx.clearRect(0, 0, this.displaySize.width, this.displaySize.height);
       this.recordFacePositions(resizedDetections);
+      this.lastFaceUpdate = now;
+    } else if (now - this.lastFaceUpdate > CLEAR_FACE_LIST_DELAY) {
+      // Clear the current faces if enough time has passed without any new detections
+      this.currentFaces = [];
     }
 
     setTimeout(() => this.onPlay(), TRACK_INTERVAL); // Adjust the timeout as needed
@@ -288,10 +298,8 @@ class Eye {
       }
     });
 
-    // Remove stale faces here or in a separate method
-    if (this.faceList.length > 1) {
-      this.removeStaleFaces();
-    }
+    // Always call removeStaleFaces to remove any face that has become stale
+    this.removeStaleFaces();
   }
 
   matchFaces(newFace, faceList) {
