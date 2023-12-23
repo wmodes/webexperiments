@@ -69,7 +69,7 @@
 }
 
 /* The video can be full width but not cover the screen, because we hide it behind the scenes */
-.wrapper video{
+#input-video{
   position: absolute;
   top: 0;
   left: 0;
@@ -83,7 +83,7 @@
 }
 
 /* The canvas should cover the screen  */
-.wrapper canvas {
+#canvas {
   position: absolute;
   top: 0;
   left: 0;

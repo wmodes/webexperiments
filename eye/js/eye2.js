@@ -26,6 +26,10 @@ const IS_DRAW_FACES = false;
 const SIMILARITY_THRESHOLD = 400;
 // how long do we keep stale faces
 const STALE_FACE_DURATION = 2000;
+// how long do we glance at the most dominent face
+const BASE_GLANCE_DURATION = 2000;
+// threshold-based check on iris movement
+const MOVEMENT_THRESHOLD = 25; // pixels
 
 /**
  * Manages face detection and tracking in video streams.
@@ -96,12 +100,11 @@ class Faces {
   }
 
   recordFacePositions(detections) {
-    const ctx = this.ctx;
     const canvasWidth = $(this.canvasEl).width();
     detections.forEach(det => {
       // console.log("det:", det);
       // Record our certainty
-      const score = det.score;
+      const certainty = det.score;
 
       // Bounding box coordinates and dimensions
       const box = det.box;
@@ -111,12 +114,13 @@ class Faces {
       const h = box.height;
   
       // Calculate Bindi X and Y
-      const bindiX = x + w / 2;
-      const bindiY = y + h / 4;
+      const bindiX = x + w / 2; // centered
+      const bindiY = y + h / 4; // 1/4 from top
 
       var faceRecord = { 
-        size: h, 
-        score: score, 
+        height: h, 
+        width: w,
+        certainty: certainty, 
         x: bindiX, 
         y: bindiY, 
         time: Date.now() 
@@ -150,20 +154,20 @@ class Faces {
     return p;
   }
 
-  drawFaces(p) {
-    const plusSize = p.size / 16;
+  drawFaces(faceRecord) {
 
-    ctx.strokeStyle = 'red'; // Change to a visible color
-    ctx.lineWidth = 2; // Adjust the line width for visibility
+    // Set properties for the bounding box
+    this.ctx.strokeStyle = 'red'; // Set the color of the box
+    this.ctx.lineWidth = 2; // Set the width of the box's border
 
-    // Draw a + over the bindi
-    ctx.beginPath();
-    ctx.moveTo(p.x - plusSize / 2, p.y);
-    ctx.lineTo(p.x + plusSize / 2, p.y);
-    ctx.stroke();
-    ctx.moveTo(p.x, p.y - plusSize / 2);
-    ctx.lineTo(p.x, p.y + plusSize / 2);
-    ctx.stroke();
+    // Calculate the top-left corner of the bounding box
+    const topLeftX = faceRecord.x - faceRecord.width / 2;
+    const topLeftY = faceRecord.y - faceRecord.height / 4;
+
+    // Draw the bounding box
+    this.ctx.beginPath();
+    this.ctx.rect(topLeftX, topLeftY, faceRecord.width, faceRecord.height);
+    this.ctx.stroke();
   }
 }
 
@@ -189,6 +193,10 @@ class Eye {
     this.yPos = 0;
     this.faceList = [];
     this.nextId = 1; // Counter for generating unique IDs
+    this.currentFocusFaceId = null;
+    this.lastFocusChangeTime = 0;    
+    // threshold-based check on iris movement
+    this.lastFocusPosition = { x: null, y: null };
   }
 
   // Find the width and height of the eye image
@@ -260,14 +268,6 @@ class Eye {
     return new Promise((resolve) => { setTimeout(resolve, MOVE_INTERVAL); });
   }
 
-  async moveIrisRandomly() {
-    while (true) {
-      const { x, y } = this.getRandomPos();
-      this.moveTo(x, y);
-      await this.waitAMoment();
-    }
-  }
-
   updateFaceList(currentFaces) {
     currentFaces.forEach(currentFace => {
       const matchedFace = this.matchFaces(currentFace, this.faceList);
@@ -307,8 +307,21 @@ class Eye {
     // This could be a simple Euclidean distance between their positions
     // and/or a difference in their sizes
     const positionDistance = Math.sqrt(Math.pow(face1.x - face2.x, 2) + Math.pow(face1.y - face2.y, 2));
-    const sizeDifference = Math.abs(face1.size - face2.size);
+    const sizeDifference = Math.abs(face1.height - face2.height);
     return positionDistance + sizeDifference; // Example combination
+  }
+
+  addNewFace(faceData) {
+    const faceHash = this.createFaceHash(faceData);
+    const viewportHeight = $(window).height();
+    const normSize = faceData.height / viewportHeight;  
+    const newFace = {
+      id: faceHash,
+      score: faceData.certainty * normSize,
+      ...faceData,
+      lastUpdated: Date.now()
+    };
+    this.faceList.push(newFace);
   }
 
   updateFaceInList(newData, face) {
@@ -319,21 +332,15 @@ class Eye {
 
     // Update the last updated timestamp
     face.lastUpdated = Date.now();
-  }
-
-  addNewFace(faceData) {
-    const faceHash = this.createFaceHash(faceData);
-    const newFace = {
-      id: faceHash,
-      ...faceData,
-      lastUpdated: Date.now()
-    };
-    this.faceList.push(newFace);
+    // Update the score
+    const viewportHeight = $(window).height();
+    const normSize = face.height / viewportHeight;
+    face.score = face.certainty * normSize; 
   }
 
   createFaceHash(face) {
     // Create a string from key face attributes
-    const faceString = `${face.size}-${face.score}-${face.x}-${face.y}`;
+    const faceString = `${face.height}-${face.certainty}-${face.x}-${face.y}`;
   
     // Simple hash function
     let hash = 0;
@@ -356,21 +363,75 @@ class Eye {
     });
   }
 
-  // Run the eye application
+  calculateFocusDuration(face) {
+    // If there's only one face in the list, assign BASE_GLANCE_DURATION
+    if (this.faceList.length === 1) {
+      return BASE_GLANCE_DURATION;
+    }
+    const dominantFaceScore = this.faceList[0].score; // Assuming faceList is sorted
+    // Scale duration based on score difference
+    const scoreRatio = face.score / dominantFaceScore;
+    return BASE_GLANCE_DURATION * scoreRatio;
+  }
+  
+  isSignificantMovement(newFace) {
+    // Check if the last focus position is set
+    if (this.lastFocusPosition.x === null || this.lastFocusPosition.y === null) {
+      return true; // No previous position to compare, so movement is significant
+    }
+    // Calculate the difference in position
+    const deltaX = Math.abs(newFace.x - this.lastFocusPosition.x);
+    const deltaY = Math.abs(newFace.y - this.lastFocusPosition.y);  
+    // Determine if the movement exceeds the threshold
+    return deltaX > MOVEMENT_THRESHOLD || deltaY > MOVEMENT_THRESHOLD;
+  }
+
+  noFacesIdle() {
+    // Do something when no faces are detected
+    // Example: Move the iris to a random position
+  }
+
   async run() {
     while (true) {
-      // process the next face update
       this.updateFaceList(this.faceApp.currentFaces);
-      console.log(this.faceList);
-      // if we have faces detected
+
       if (this.faceList.length > 0) {
-        // move to the first face
-        this.moveToFace(this.faceList[0]);
+        // Sort the faces based on their score
+        this.faceList.sort((a, b) => b.score - a.score);
+
+        const now = Date.now();
+        const currentFocusFaceIndex = this.faceList.findIndex(face => face.id === this.currentFocusFaceId);
+
+        if (currentFocusFaceIndex === -1) {
+          // Focus on the first face in the list if the current one is no longer present
+          this.currentFocusFaceId = this.faceList[0].id;
+          this.lastFocusChangeTime = now;
+          this.lastFocusPosition = { x: null, y: null }; // Reset the last position
+        } else {
+          const currentFocusFace = this.faceList[currentFocusFaceIndex];
+          const focusDuration = this.calculateFocusDuration(currentFocusFace);
+
+          if (now - this.lastFocusChangeTime >= focusDuration) {
+            // Shift focus to the next face in the list
+            const nextFocusFaceIndex = (currentFocusFaceIndex + 1) % this.faceList.length;
+            this.currentFocusFaceId = this.faceList[nextFocusFaceIndex].id;
+            this.lastFocusChangeTime = now;
+            this.lastFocusPosition = { x: null, y: null }; // Reset the last position
+          } else if (this.isSignificantMovement(currentFocusFace)) {
+            // Move the iris to the current focus face only if significant movement is detected
+            this.moveToFace(currentFocusFace);
+            this.lastFocusPosition = { x: currentFocusFace.x, y: currentFocusFace.y };
+          }
+        }
+      } else {
+        // If no faces are detected, invoke the idle behavior
+        this.noFacesIdle();
       }
-      // wait a moment
+
       await this.waitAMoment();
     }
   }
+
   
 }
 
@@ -381,8 +442,8 @@ class Eye {
   faceApp.run();
 
   // Usage
-  const myEye = new Eye(faceApp);
-  myEye.run();
+  const eyeApp = new Eye(faceApp);
+  eyeApp.run();
   // myEye.moveIrisRandomly();
 // });
 
