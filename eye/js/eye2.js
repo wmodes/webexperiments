@@ -31,7 +31,7 @@ const BASE_GLANCE_DURATION = 2000;
 // threshold-based check on iris movement
 const MOVEMENT_THRESHOLD = 25; // pixels
 // idle eye movement
-const IDLE_BASE_GLANCE_DURATION = 2000;
+const IDLE_BASE_GLANCE_DURATION = 4000;
 const IDLE_UPDATE_INTERVAL = 10000; // milliseconds
 const IDLE_POINTS_MIN = 3;
 const IDLE_POINTS_MAX = 8;
@@ -400,10 +400,13 @@ class Eye {
     const numberOfPoints = Math.floor(Math.random() * (IDLE_POINTS_MAX - IDLE_POINTS_MIN + 1)) + IDLE_POINTS_MIN;
     this.idlePoints = [];
     for (let i = 0; i < numberOfPoints; i++) {
-      const xNorm = Math.random() * 2 - 1; // Random number between -1 and 1
-      const yNorm = Math.random() * 2 - 1; // Random number between -1 and 1
+      // Generate xNorm between -0.75 and 0.75
+      const xNorm = Math.random() * 1.5 - 0.75; // Random number between -0.75 and 0.75
+      // Generate yNorm between -0.5 and 0.6
+      const yNorm = Math.random() * 1.1 - 0.5; // Random number between -0.5 and 0.6
+  
       const distanceFromCenter = Math.sqrt(xNorm ** 2 + yNorm ** 2);
-      const score = 1 - distanceFromCenter / Math.sqrt(2); // Score calculation
+      const score = 1 - distanceFromCenter / Math.sqrt(2); // Score calculation based on distance from center
       this.idlePoints.push({ xNorm, yNorm, score });
     }
   }
