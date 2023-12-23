@@ -30,6 +30,12 @@ const STALE_FACE_DURATION = 2000;
 const BASE_GLANCE_DURATION = 2000;
 // threshold-based check on iris movement
 const MOVEMENT_THRESHOLD = 25; // pixels
+// idle eye movement
+const IDLE_BASE_GLANCE_DURATION = 2000;
+const IDLE_UPDATE_INTERVAL = 10000; // milliseconds
+const IDLE_POINTS_MIN = 3;
+const IDLE_POINTS_MAX = 8;
+const IDLE_VERT_VARIANCE = 10;
 
 /**
  * Manages face detection and tracking in video streams.
@@ -197,6 +203,10 @@ class Eye {
     this.lastFocusChangeTime = 0;    
     // threshold-based check on iris movement
     this.lastFocusPosition = { x: null, y: null };
+    // idle eye movement  
+    this.currentIdleChangeTime = 0;
+    this.idlePoints = [];
+    this.idlePointsUpdate = null;
   }
 
   // Find the width and height of the eye image
@@ -386,9 +396,35 @@ class Eye {
     return deltaX > MOVEMENT_THRESHOLD || deltaY > MOVEMENT_THRESHOLD;
   }
 
-  noFacesIdle() {
-    // Do something when no faces are detected
-    // Example: Move the iris to a random position
+  generateIdlePoints() {
+    const numberOfPoints = Math.floor(Math.random() * (IDLE_POINTS_MAX - IDLE_POINTS_MIN + 1)) + IDLE_POINTS_MIN;
+    this.idlePoints = [];
+    for (let i = 0; i < numberOfPoints; i++) {
+      const xNorm = Math.random() * 2 - 1; // Random number between -1 and 1
+      const yNorm = Math.random() * 2 - 1; // Random number between -1 and 1
+      const distanceFromCenter = Math.sqrt(xNorm ** 2 + yNorm ** 2);
+      const score = 1 - distanceFromCenter / Math.sqrt(2); // Score calculation
+      this.idlePoints.push({ xNorm, yNorm, score });
+    }
+  }
+
+  async noFacesIdle() {
+    const now = Date.now();
+    // Update idle points only if necessary based on the defined interval
+    if (!this.idlePointsUpdate || now - this.idlePointsUpdate > IDLE_UPDATE_INTERVAL) {
+      this.generateIdlePoints();
+      this.idlePointsUpdate = now; // Update the timestamp
+    }
+    // Check if it's time to switch to a new idle point or if there's no current idle point
+    if (!this.currentIdlePoint || now - this.currentIdleChangeTime >= IDLE_BASE_GLANCE_DURATION * this.currentIdlePoint.score) {
+      // Select a random idle point
+      const randomIndex = Math.floor(Math.random() * this.idlePoints.length);
+      this.currentIdlePoint = this.idlePoints[randomIndex];
+      this.currentIdleChangeTime = now;
+    }
+    // Implement the movement to look at the current idle point
+    this.moveToFace(this.currentIdlePoint); // Adjust this method or create a new one for idle points
+    await this.waitAMoment();
   }
 
   async run() {
