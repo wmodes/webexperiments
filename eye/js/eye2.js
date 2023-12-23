@@ -16,7 +16,7 @@ const MOVE_INTERVAL = 300; // milliseconds
 // how fast we move to new eye position
 const MOVEMENT_SPEED = 150;
 // eye scale relative to image size
-const EYE_SCALE = 0.3;
+const EYE_SCALE = 0.25;
 // for pause between movements
 const MIN_MOVE_WAIT = 500;
 const MAX_MOVE_WAIT = 4000;
