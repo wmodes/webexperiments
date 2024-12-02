@@ -1,0 +1,122 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&display=swap');
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-size: 20px;
+    line-height: 1.42857143;
+    color: #333;
+    background-color: #fff;  
+    font-family: "Cinzel", serif;
+    font-optical-sizing: auto;
+    font-weight: <weight>;
+    font-style: normal;
+}
+
+
+#content {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  background-image: url("../img/temple-of-the-oracle.jpg");
+  background-size: cover;
+  background-position: center;  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.bubble-wrapper {
+  position: absolute;
+  top: 55%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start; /* Align bubble at the top of the wrapper */
+  max-width: 80%; /* Constrain width */
+  max-height: calc(100vh - 55% - 4em); /* Constrain wrapper height */
+}
+
+.speech-bubble {
+  position: relative;
+  flex-grow: 1; /* Allow the bubble to grow within the wrapper */
+  width: max-content;
+  max-width: 100%; /* Constrain to wrapper's width */
+  max-height: 100%; /* Bubble's height is limited to wrapper's height */
+  padding: 1.5em 2em;
+  border-radius: 2em;
+  background: #ffffff; /* White background */
+  color: #000000; /* Black text */
+  text-align: center;
+  word-wrap: break-word; /* Ensure long words break */
+  overflow-y: auto; /* Allow internal scrolling for content overflow */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for pop */
+  scroll-behavior: smooth; /* Smooth scrolling for better UX */
+}
+
+.bubble-wrapper:before {
+  content: '';
+  position: absolute;
+  bottom: 100%; /* Attach the tail to the bottom of the bubble */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 20px 60px 20px; /* Tail dimensions */
+  border-color: transparent transparent #ffffff transparent; /* White tail */
+  z-index: 1; /* Ensure the tail is visible above other content */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .speech-bubble {
+    width: 80%; /* Narrower for smaller screens */
+    padding: 1.5em;
+  }
+}
+
+@media (orientation: portrait) {
+  .speech-bubble {
+    width: 90%; /* Full width for vertical orientation */
+    padding: 1.5em;
+  }
+}
+
+.button-box {
+  display: flex; /* Use flexbox */
+  width: 100%; /* Take the full width for alignment */
+  margin-top: 5px;
+  font-size: 90%; /* Slightly smaller font size */
+
+  justify-content: space-between; /* Space items evenly */
+  align-items: center; /* Align vertically if needed */
+}
+
+.button-box:has(:only-child) {
+  justify-content: flex-end; /* Align single button to the right */
+}
+
+.button-box button {
+  all: unset; /* Reset all button styling */
+  cursor: pointer; /* Keep pointer cursor for usability */
+  color: inherit; /* Match the font color of the surrounding text */
+  font: inherit; /* Match the font and size of the surrounding text */
+  text-decoration: none; /* Optional: Add underline to make it look clickable */
+}
+
+.button-box button:hover {
+  font-weight: 600; /* Optional: Remove underline on hover for effect */
+}
+
+.ellipses {
+  width: 8em;
+  min-width: 8em;
+  font-size: 200%;
+  font-weight: bold;
+}
