@@ -34,7 +34,79 @@ var dialog = {
     options: [],
     destinations: [],
   },
-  // Remaining dialogue entries...
+  1: {
+    speech: "Welcome to the great Ludic Oracle, seeker. I am the Oracle, the living conduit through which Shigeru Miyamoto communicates, and I will guide you on your quest to be the great game dev that you are destined to be. I see uncertainty in your eyes, but fear not, for I will show you the way and offer you an idea for an experimental game that will please the Ludic Gods.",
+    options: [
+        "I am not ready, Oracle.",
+        "I am ready, Oracle.",
+    ],
+    destinations: [3, 2],
+  },
+  2: {
+    speech: "Very well, seeker. Let us begin. I will ask you a series of questions, and you must answer them truthfully. Are you ready?",
+    options: [
+        "No, Oracle.",
+        "Yes, Oracle. I will answer truthfully.",
+    ],
+    destinations: [3, 4],
+  },
+  3: {
+    speech: "Very well, seeker. Return to me when you are ready to begin your quest.",
+    options: [
+        "Start over."
+    ],
+    destinations: [1],
+  },
+  4: {
+    speech: "The Oracle requires sacrifice. Did you bring an offering?",
+    options: [
+        "No, Oracle.",
+        "Yes, Oracle. I have brought an offering.",
+    ],
+    destinations: [6, 5],
+  },
+  5: {
+    speech: "Very well, seeker. You may proceed. The Oracle requires a sacrifice of <b>time and effort.</b> Are you willing to proceed?",
+    options: [
+        "I am not ready, Oracle.",
+        "I am ready, Oracle.",
+    ],
+    destinations: [6, 7],
+  },
+  6: {
+    speech: "The Oracle requires a sacrifice. Return when you are ready to proceed.",
+    options: [
+        "Start over."
+    ],
+    destinations: [1],
+  },
+  7: {
+    speech: "The Oracle will enter a trance and reveal the game idea to you. Are you ready?",
+    options: [
+        "No, Oracle.",
+        "Yes, Oracle.",
+    ],
+    destinations: [6, 8],
+  },
+  8: {
+    speech: "We shall begin.",
+    options: [
+        "Continue."
+    ],
+    destinations: [9],
+  },
+  9: {
+    speech: "<div class='ellipses'>...</div>",
+    options: [],
+    destinations: [],
+  },
+  10: {
+    speech: "<div id='game-idea'></div>",
+    options: [
+        "Start over."
+    ],
+    destinations: [1],
+  }
 };
 
 /**
@@ -43,6 +115,7 @@ var dialog = {
  * @param {number} n - The ID of the dialogue to display.
  */
 function showSpeech(n) {
+  console.log("Showing dialogue", n);
   var speech = dialog[n].speech;
   var options = dialog[n].options;
   var destinations = dialog[n].destinations;
