@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Prezo</title>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+    <!-- CSS Framework (Twitter's Bootstrap) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+    <!-- Prettier -->
+    <script src="https://cdn.jsdelivr.net/npm/prettier@2.8.8/standalone.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prettier@2.8.8/parser-babel.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prettier@2.8.8/parser-html.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prettier@2.8.8/parser-postcss.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prettier@2.8.8/parser-json.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prettier@2.8.8/parser-markdown.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prettier@2.8.8/parser-typescript.js"></script>
+
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <!-- Highlight.js themes -->
+    <!-- Highlight.js Themes -->
+    <link id="theme-monokai" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/monokai-sublime.min.css">
+    <link id="theme-dracula" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/dracula.min.css" disabled>
+    <link id="theme-github-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
+    <link id="theme-github-gist" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-gist.min.css" disabled>
+
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <script src="js/code-prezo.js"></script>
+
+</head>
+<body>
+  <main id="content" class="container">
+    <header>
+      <h1>Code Prezo</h1>
+    </header>
+    <!-- Top Panel -->
+    <section id="top-panel" class="row">
+      <div class="top-panel-col col-md-6 col-12">
+        <label>Paste code here:</label>
+        <textarea id="input-code"></textarea>
+        <div class="button-box">
+            <button id="reformat-code" class="btn btn-secondary">Reformat</button>
+            <button id="present-code" class="btn btn-primary">Present</button>
+        </div>
+      </div>
+      <div class="top-panel-col col-md-6 col-12">
+        <label>Formatted Code:</label>
+        <div id="output-code" class="formatted-code" tabindex="0">
+        </div>
+        <div class="button-box">
+            <button id="copy-code" class="btn btn-secondary">Copy Code</button>
+        </div>
+        <div id="error-message" style="color: red; display: none;"></div>
+      </div>
+    </section>
+    
+    <!-- Bottom Panel -->
+    <section id="bottom-panel">
+        <div>
+            <label>Language:</label>
+            <span id="language">Autodetect</span>
+        </div>
+        <div>
+            <label>Theme:</label>
+            <select id="theme">
+            </select>
+        </div>
+        <div>
+            <label>Custom CSS</label>
+            <textarea id="custom-css"></textarea>
+        </div>
+    </section>
+  </main>
+</body>
+</html>

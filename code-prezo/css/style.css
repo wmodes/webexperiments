@@ -1,0 +1,138 @@
+/* General Styles */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  /* display: flex;
+  flex-direction: column; */
+}
+
+/* Responsive Layout */
+
+#content {
+  width: 90%;
+  margin: 0 auto;
+}
+
+#top-panel {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 20px;
+  min-height: 500px;
+}
+
+.top-panel-col  {
+  height: 100%;
+  flex: 1;
+}
+
+/* Bottom Panel */
+
+#bottom-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0 auto 20px auto;
+  box-sizing: border-box;
+}
+
+#bottom-panel select {
+  width: min-content;
+}
+
+#custom-css {
+  height: 100px;
+}
+
+/* Textarea Styles */
+
+textarea, .formatted-code {
+  width: 100%;
+  min-height: 200px;
+  padding: 10px;
+  font-family: monospace;
+  font-size: 1em;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+#top-panel textarea, .formatted-code {
+  min-height: 400px;
+}
+
+/* Formatted Code (Div) Styles */
+.formatted-code {
+  background-color: #ffffff;
+  overflow: auto;
+  white-space: pre-wrap; /* Allow wrapped text while keeping Highlight.js formatting */
+  word-wrap: break-word; /* Ensure long words break properly */
+  resize: vertical;
+  margin-bottom: 6px;
+  user-select: text; /* Ensures text is selectable */
+  cursor: text; /* Indicates to the user that the text is selectable */
+}
+
+:focus {
+  outline: 1px solid #015FCC; /* Blue focus outline */
+  border: 1px solid #015FCC;  /* Match outline for consistency */
+}
+
+/* Mobile Styles */
+
+/* Stacking for Small Screens */
+@media (max-width: 400px) {
+  #top-panel {
+    flex-direction: column;
+    margin-bottom: 10px;
+  }
+  #top-panel .top-panel-col {
+    width: 100%;
+  }
+  .button-box button {
+    min-width: 100% !important;
+  }
+}
+
+/* Misc Styles */
+
+h1 {
+  margin: 20px 0;
+  font-size: 2em;
+  text-align: left;
+}
+
+#error-message {
+  padding: 5px;
+  font-weight: bold;
+}
+
+/* Button Styles */
+
+.button-box {
+  text-align: right;
+}
+
+.button-box button {
+  margin-right: 10px;
+}
+
+.button-box button:last-child {
+  margin-right: 0; /* Remove margin from the last button */
+}
+
+/* Highlight.js Styles */
+
+.formatted-code {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1rem;
+  padding: 10px;
+  border-radius: 5px;
+  overflow: auto;
+  white-space: pre; /* Preserve whitespace */
+  background-color: unset; /* Ensures themes apply their background */
+  color: unset; /* Ensures theme text colors are used */
+}
+
+/* .formatted-code span {
+  color: inherit;
+} */
