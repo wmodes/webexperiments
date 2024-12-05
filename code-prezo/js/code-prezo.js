@@ -41,83 +41,87 @@ $(document).ready(function () {
    * List of Highlight.js themes with their IDs and display names.
    * @type {Array<{id: string, name: string}>}
    */
-  const themes = [
-    { id: 'a11y-dark', name: 'A11y Dark' },
-    { id: 'a11y-light', name: 'A11y Light' },
-    { id: 'agate', name: 'Agate' },
-    { id: 'an-old-hope', name: 'An Old Hope' },
-    { id: 'androidstudio', name: 'Android Studio' },
-    { id: 'arduino-light', name: 'Arduino Light' },
-    { id: 'atom-one-dark', name: 'Atom One Dark' },
-    { id: 'atom-one-dark-reasonable', name: 'Atom One Dark Reasonable' },
-    { id: 'atom-one-light', name: 'Atom One Light' },
-    { id: 'brown-paper', name: 'Brown Paper' },
-    { id: 'codepen-embed', name: 'CodePen Embed' },
-    { id: 'color-brewer', name: 'Color Brewer' },
-    { id: 'dark', name: 'Dark' },
-    { id: 'default', name: 'Default' },
-    { id: 'docco', name: 'Docco' },
-    { id: 'dracula', name: 'Dracula' },
-    { id: 'far', name: 'Far' },
-    { id: 'foundation', name: 'Foundation' },
-    { id: 'github', name: 'GitHub' },
-    { id: 'github-dark', name: 'GitHub Dark' },
-    { id: 'github-dark-dimmed', name: 'GitHub Dark Dimmed' },
-    { id: 'gml', name: 'GML' },
-    { id: 'googlecode', name: 'Google Code' },
-    { id: 'gradient-dark', name: 'Gradient Dark' },
-    { id: 'gradient-light', name: 'Gradient Light' },
-    { id: 'grayscale', name: 'Grayscale' },
-    { id: 'hybrid', name: 'Hybrid' },
-    { id: 'idea', name: 'IDEA' },
-    { id: 'ir-black', name: 'IR Black' },
-    { id: 'isbl-editor-dark', name: 'ISBL Editor Dark' },
-    { id: 'isbl-editor-light', name: 'ISBL Editor Light' },
-    { id: 'kimbie.dark', name: 'Kimbie Dark' },
-    { id: 'kimbie.light', name: 'Kimbie Light' },
-    { id: 'lightfair', name: 'Lightfair' },
-    { id: 'lioshi', name: 'Lioshi' },
-    { id: 'magula', name: 'Magula' },
-    { id: 'mono-blue', name: 'Mono Blue' },
-    { id: 'monokai', name: 'Monokai' },
-    { id: 'monokai-sublime', name: 'Monokai Sublime' },
-    { id: 'night-owl', name: 'Night Owl' },
-    { id: 'nnfx-dark', name: 'NNFX Dark' },
-    { id: 'nnfx-light', name: 'NNFX Light' },
-    { id: 'nord', name: 'Nord' },
-    { id: 'obsidian', name: 'Obsidian' },
-    { id: 'panda-syntax-dark', name: 'Panda Syntax Dark' },
-    { id: 'panda-syntax-light', name: 'Panda Syntax Light' },
-    { id: 'paraiso-dark', name: 'Paraiso Dark' },
-    { id: 'paraiso-light', name: 'Paraiso Light' },
-    { id: 'pojoaque', name: 'Pojoaque' },
-    { id: 'purebasic', name: 'PureBasic' },
-    { id: 'qtcreator_dark', name: 'QtCreator Dark' },
-    { id: 'qtcreator_light', name: 'QtCreator Light' },
-    { id: 'rainbow', name: 'Rainbow' },
-    { id: 'routeros', name: 'RouterOS' },
-    { id: 'school-book', name: 'School Book' },
-    { id: 'shades-of-purple', name: 'Shades of Purple' },
-    { id: 'srcery', name: 'Srcery' },
-    { id: 'stackoverflow-dark', name: 'Stack Overflow Dark' },
-    { id: 'stackoverflow-light', name: 'Stack Overflow Light' },
-    { id: 'sunburst', name: 'Sunburst' },
-    { id: 'tokyo-night-dark', name: 'Tokyo Night Dark' },
-    { id: 'tokyo-night-light', name: 'Tokyo Night Light' },
-    { id: 'tomorrow', name: 'Tomorrow' },
-    { id: 'tomorrow-night', name: 'Tomorrow Night' },
-    { id: 'vs', name: 'VS' },
-    { id: 'vs2015', name: 'VS2015' },
-    { id: 'xcode', name: 'Xcode' },
-    { id: 'xt256', name: 'XT256' },
-    { id: 'zenburn', name: 'Zenburn' }
-  ];  
-
-  // Load themes into the DOM
-  loadThemes(themes);
-
-  // Generate the theme selector dynamically
-  generateThemeSelector(themes);
+  const darkThemes = [
+    { id: "a11y-dark", name: "A11y Dark" },
+    { id: "an-old-hope", name: "An Old Hope" },
+    { id: "atom-one-dark", name: "Atom One Dark" },
+    { id: "atom-one-dark-reasonable", name: "Atom One Dark Reasonable" },
+    { id: "dracula", name: "Dracula" },
+    { id: "github-dark", name: "GitHub Dark" },
+    { id: "github-dark-dimmed", name: "GitHub Dark Dimmed" },
+    { id: "gradient-dark", name: "Gradient Dark" },
+    { id: "ir-black", name: "IR Black" },
+    { id: "kimbie.dark", name: "Kimbie Dark" },
+    { id: "monokai", name: "Monokai" },
+    { id: "monokai-sublime", name: "Monokai Sublime" },
+    { id: "night-owl", name: "Night Owl" },
+    { id: "nnfx-dark", name: "NNFX Dark" },
+    { id: "nord", name: "Nord" },
+    { id: "obsidian", name: "Obsidian" },
+    { id: "panda-syntax-dark", name: "Panda Syntax Dark" },
+    { id: "paraiso-dark", name: "Paraiso Dark" },
+    { id: "srcery", name: "Srcery" },
+    { id: "stackoverflow-dark", name: "Stack Overflow Dark" },
+    { id: "sunburst", name: "Sunburst" },
+    { id: "tokyo-night-dark", name: "Tokyo Night Dark" },
+    { id: "tomorrow-night", name: "Tomorrow Night" },
+    { id: "zenburn", name: "Zenburn" },
+  ];
+  const lightThemes = [
+    { id: "a11y-light", name: "A11y Light" },
+    { id: "arduino-light", name: "Arduino Light" },
+    { id: "atom-one-light", name: "Atom One Light" },
+    { id: "github", name: "GitHub" },
+    { id: "github-gist", name: "GitHub Gist" },
+    { id: "gradient-light", name: "Gradient Light" },
+    { id: "isbl-editor-light", name: "ISBL Editor Light" },
+    { id: "kimbie.light", name: "Kimbie Light" },
+    { id: "lightfair", name: "Lightfair" },
+    { id: "panda-syntax-light", name: "Panda Syntax Light" },
+    { id: "paraiso-light", name: "Paraiso Light" },
+    { id: "qtcreator_light", name: "QtCreator Light" },
+    { id: "rainbow", name: "Rainbow" },
+    { id: "stackoverflow-light", name: "Stack Overflow Light" },
+    { id: "tokyo-night-light", name: "Tokyo Night Light" },
+  ];
+  const otherThemes = [
+    { id: "agate", name: "Agate" },
+    { id: "androidstudio", name: "Android Studio" },
+    { id: "brown-paper", name: "Brown Paper" },
+    { id: "codepen-embed", name: "CodePen Embed" },
+    { id: "color-brewer", name: "Color Brewer" },
+    { id: "dark", name: "Dark" },
+    { id: "default", name: "Default" },
+    { id: "docco", name: "Docco" },
+    { id: "far", name: "Far" },
+    { id: "foundation", name: "Foundation" },
+    { id: "gml", name: "GML" },
+    { id: "googlecode", name: "Google Code" },
+    { id: "grayscale", name: "Grayscale" },
+    { id: "hybrid", name: "Hybrid" },
+    { id: "idea", name: "IDEA" },
+    { id: "lioshi", name: "Lioshi" },
+    { id: "magula", name: "Magula" },
+    { id: "mono-blue", name: "Mono Blue" },
+    { id: "pojoaque", name: "Pojoaque" },
+    { id: "purebasic", name: "PureBasic" },
+    { id: "routeros", name: "RouterOS" },
+    { id: "school-book", name: "School Book" },
+    { id: "shades-of-purple", name: "Shades of Purple" },
+    { id: "tomorrow", name: "Tomorrow" },
+    { id: "vs", name: "VS" },
+    { id: "vs2015", name: "VS2015" },
+    { id: "xcode", name: "Xcode" },
+    { id: "xt256", name: "XT256" },
+  ];
+  // Group themes into categories
+  const groupedThemes = {
+    "Dark Themes": darkThemes,
+    "Light Themes": lightThemes,
+    "Other Themes": otherThemes,
+  };
+  // Combine all themes into a single array for loading
+  const themes = [...darkThemes, ...lightThemes, ...otherThemes];
 
   // Prettier Plugins
   const plugins = [
@@ -140,6 +144,10 @@ $(document).ready(function () {
     $('#error-message').text(message).show();
     setTimeout(() => $('#error-message').fadeOut(), 5000);
   }
+
+  /**
+   * Language Detection Section
+   */
 
   /**
    * Detect programming language in the input code.
@@ -172,6 +180,10 @@ $(document).ready(function () {
     // Debounce detection
     detectLanguageTimeout = setTimeout(detectLanguage, 500);
   });
+
+  /**
+   * Code Formatting Section
+   */
 
   /**
    * Reformat the raw code using Prettier.
@@ -251,10 +263,43 @@ $(document).ready(function () {
    * Theme Management Section
    */
 
+  // Load themes into the DOM
+  loadThemes(themes);
+
   // Load saved theme from localStorage and apply it on page load
-  const savedTheme = localStorage.getItem('selectedTheme') || 'default'; // Default theme
+  const savedTheme = localStorage.getItem("selectedTheme") || "default";
+
+  // Generate the theme selector dynamically
+  generateGroupedThemeSelector(groupedThemes, savedTheme);
+
   $(`#theme-${savedTheme}`).attr('disabled', false); // Enable the saved theme
   $('#theme').val(savedTheme); // Set the theme dropdown to the saved value
+
+  /**
+   * Generates a <select> dropdown for themes with grouped options.
+   * Groups are created using <optgroup> for categories.
+   * @param {Object} groupedThemes - Object containing categorized themes.
+   * @param {string} [defaultTheme="default"] - The ID of the default theme to select.
+   */
+  function generateGroupedThemeSelector(groupedThemes, defaultTheme = "default") {
+    const themeSelector = $("#theme");
+    themeSelector.empty(); // Clear existing options
+
+    // Iterate through each category and its themes
+    Object.entries(groupedThemes).forEach(([group, themes]) => {
+      const optgroup = $("<optgroup>").attr("label", group);
+      themes.forEach((theme) => {
+        const isSelected = theme.id === defaultTheme ? "selected" : "";
+        optgroup.append(
+          $("<option>")
+            .val(theme.id)
+            .text(theme.name)
+            .attr("selected", isSelected)
+        );
+      });
+      themeSelector.append(optgroup);
+    });
+  }
 
   // Handle theme selection changes
   $('#theme').on('change', function () {
@@ -327,20 +372,6 @@ $(document).ready(function () {
       $('head').append(
         `<link id="theme-${theme.id}" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/${theme.id}.min.css" ${isDefault ? '' : 'disabled'}>`
       );
-    });
-  }
-  
-  /**
-   * Dynamically generates the `<select>` dropdown for theme selection.
-   * Populates the dropdown with options based on the themes array.
-   * @param {Array<{id: string, name: string}>} themes - List of themes with their IDs and display names.
-   * @param {string} [defaultTheme="monokai-sublime"] - The ID of the default theme to mark as selected.
-   */
-  function generateThemeSelector(themes, defaultTheme = 'default') {
-    const themeSelector = $('#theme');
-    themes.forEach(theme => {
-      const isSelected = theme.id === defaultTheme ? 'selected' : '';
-      themeSelector.append(`<option value="${theme.id}" ${isSelected}>${theme.name}</option>`);
     });
   }
 
