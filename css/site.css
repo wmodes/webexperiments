@@ -76,3 +76,7 @@ a:hover {
     text-decoration: inherit;
     color: inherit;
 }
+
+li {
+    margin-bottom: 10px;
+}
