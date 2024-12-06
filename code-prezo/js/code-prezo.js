@@ -323,14 +323,29 @@ $(document).ready(function () {
    * Copy the content of the output-code div to the clipboard.
    */
   $('#copy-code').on('click', function () {
-    const textToCopy = appState.formattedCode || appState.rawCode;
-    navigator.clipboard
-      .writeText(textToCopy)
-      .then(() => console.log('Code copied to clipboard!'))
-      .catch((err) => {
-        console.error('Failed to copy code:', err);
-        showError('Failed to copy code.');
-      });
+    const container = document.querySelector('#output-code');
+    const range = document.createRange();
+    const selection = window.getSelection();
+  
+    // Select the entire container
+    range.selectNode(container);
+    selection.removeAllRanges();
+    selection.addRange(range);
+  
+    try {
+      // Copy to clipboard
+      const success = document.execCommand('copy');
+      if (success) {
+        console.log('Container and content copied successfully!');
+      } else {
+        console.error('Failed to copy container and content.');
+      }
+    } catch (error) {
+      console.error('Error copying container:', error);
+    }
+  
+    // Clear the selection after copying
+    selection.removeAllRanges();
   });
 
   /**
