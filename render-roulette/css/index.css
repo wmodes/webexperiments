@@ -1,0 +1,57 @@
+/* Global styles */
+body {
+  background-color: white;
+  color: black;
+  font-family: "Arial", sans-serif;
+  font-size: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  text-align: center;
+  cursor: pointer;
+  margin: 0;
+}
+
+#title {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0.25rem;
+  font-size: 1rem;
+  color: #ccc;
+}
+
+#instructions {
+  position: absolute;
+  bottom: 0;
+  /* centered horizontally */
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 1rem;
+  font-size: 1rem;
+  color: #888;  
+  transition: all 1s ease-in; /* Smooth fade */
+}
+
+#instructions:not(.show) {
+  opacity: 0;
+}
+
+/* Output container */
+#output {
+  max-width: 80vw;
+  word-break: break-word;
+}
+
+/* Base state for prompt parts */
+.prompt-part {
+  display: inline;
+  opacity: 0; /* Start hidden */
+  transition: all 1s ease-in; /* Smooth fade */
+}
+
+/* When the class is added, the transition takes effect */
+.show {
+  opacity: 1;
+}
