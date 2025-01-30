@@ -69,38 +69,14 @@ body {
 
 
 
-/* Specifically target mobile devices */
-@media only screen and (max-device-width: 900px), (pointer: coarse) {
+/* Responsive adjustments */
+@media (max-width: 850px) {
   #output {
-    font-size: 2rem;
-    max-width: 90vw;
+    font-size: 1.75rem; /* Scale down text size */
+    max-width: 95vw; /* Adjust width for smaller screens */
   }
 
   #title, #instructions {
-    font-size: 0.75rem;
-  }
-}
-
-/* Even smaller mobile devices (iPhone SE, older Androids) */
-@media only screen and (max-device-width: 800px), (pointer: coarse) {
-  #output {
-    font-size: 1.8rem;
-    max-height: 75vh;
-  }
-
-  #title, #instructions {
-    font-size: 0.7rem;
-  }
-}
-
-/* Handle landscape mode specifically */
-@media only screen and (max-device-width: 900px) and (orientation: landscape) {
-  #output {
-    font-size: 1.6rem;
-    max-height: 70vh;
-  }
-
-  #title, #instructions {
-    font-size: 0.65rem;
+    font-size: 0.75rem; /* Adjust supporting text size */
   }
 }
