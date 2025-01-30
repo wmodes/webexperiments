@@ -67,21 +67,13 @@ body {
 
 
 
-/* Adjust media queries to better detect mobile devices */
-@media (max-width: 1024px), (pointer: coarse) {
-  #output {
-    font-size: 2rem; /* Scale down slightly for touchscreens */
-  }
 
-  #title, #instructions {
-    font-size: 0.875rem; /* Adjust smaller text elements */
-  }
-}
 
-@media (max-width: 900px), (pointer: coarse) {
+/* Specifically target mobile devices */
+@media only screen and (max-device-width: 900px), (pointer: coarse) {
   #output {
-    font-size: 1rem;
-    max-width: 90vw; /* Prevent text from hitting screen edges */
+    font-size: 2rem;
+    max-width: 90vw;
   }
 
   #title, #instructions {
@@ -89,14 +81,26 @@ body {
   }
 }
 
-/* Mobile-specific styles with extra width buffer */
-/* @media (max-width: 850px), (max-device-width: 850px), (pointer: coarse) {
+/* Even smaller mobile devices (iPhone SE, older Androids) */
+@media only screen and (max-device-width: 800px), (pointer: coarse) {
   #output {
-    font-size: 1.8rem; /* Further scaling for small screens */
+    font-size: 1.8rem;
     max-height: 75vh;
   }
 
   #title, #instructions {
     font-size: 0.7rem;
   }
-} */
+}
+
+/* Handle landscape mode specifically */
+@media only screen and (max-device-width: 900px) and (orientation: landscape) {
+  #output {
+    font-size: 1.6rem;
+    max-height: 70vh;
+  }
+
+  #title, #instructions {
+    font-size: 0.65rem;
+  }
+}
