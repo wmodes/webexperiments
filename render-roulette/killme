@@ -1,0 +1,15 @@
+Okay, now let's think about saving elements in random storage.  Create two new functions beforePrompt() and afterPrompt() that will take care of things that have to happen after we do our prompt. We'll have to pass an array of the index to each of our random choices we made.
+
+
+
+{
+timestamp: <current timestamp>,
+prompts: {
+  start: [],
+  source: [],
+  composition: [],
+  animation: [],
+  style: [],
+  wildcard: []
+}
+}
