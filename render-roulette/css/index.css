@@ -12,6 +12,9 @@ body {
   margin: 0;
   padding: 1rem; /* Prevents text from hitting edges */
   box-sizing: border-box;
+  font-size: 1rem; /* Base size to prevent unexpected upscaling */
+  -webkit-text-size-adjust: 100%; /* Prevent Safari from auto-scaling text */
+  text-size-adjust: 100%; /* Standard property */
 }
 
 /* Title adjustments */
@@ -62,22 +65,23 @@ body {
   opacity: 1;
 }
 
-/* Responsive: Medium screens (tablets, landscape mobile) */
-@media (max-width: 1024px) {
+
+
+/* Adjust media queries to better detect mobile devices */
+@media (max-width: 1024px), (pointer: coarse) {
   #output {
-    font-size: 2.5rem;
+    font-size: 2.5rem; /* Scale down slightly for touchscreens */
   }
 
   #title, #instructions {
-    font-size: 0.875rem;
+    font-size: 0.875rem; /* Adjust smaller text elements */
   }
 }
 
-/* Responsive: Small screens (portrait mobile) */
-@media (max-width: 768px) {
+@media (max-width: 900px), (pointer: coarse) {
   #output {
     font-size: 2rem;
-    max-width: 90vw; /* Prevents horizontal cut-off */
+    max-width: 90vw; /* Prevent text from hitting screen edges */
   }
 
   #title, #instructions {
@@ -85,10 +89,10 @@ body {
   }
 }
 
-/* Responsive: Wide but short screens (landscape mobile) */
-@media (max-width: 900px) and (max-height: 450px) {
+/* Mobile-specific styles with extra width buffer */
+@media (max-width: 850px), (max-device-width: 850px), (pointer: coarse) {
   #output {
-    font-size: 1.8rem; /* Scale down text for landscape */
+    font-size: 1.8rem; /* Further scaling for small screens */
     max-height: 75vh;
   }
 
