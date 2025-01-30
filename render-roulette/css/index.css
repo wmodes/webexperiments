@@ -70,7 +70,7 @@ body {
 /* Adjust media queries to better detect mobile devices */
 @media (max-width: 1024px), (pointer: coarse) {
   #output {
-    font-size: 2.5rem; /* Scale down slightly for touchscreens */
+    font-size: 2rem; /* Scale down slightly for touchscreens */
   }
 
   #title, #instructions {
@@ -80,7 +80,7 @@ body {
 
 @media (max-width: 900px), (pointer: coarse) {
   #output {
-    font-size: 2rem;
+    font-size: 1rem;
     max-width: 90vw; /* Prevent text from hitting screen edges */
   }
 
@@ -90,7 +90,7 @@ body {
 }
 
 /* Mobile-specific styles with extra width buffer */
-@media (max-width: 850px), (max-device-width: 850px), (pointer: coarse) {
+/* @media (max-width: 850px), (max-device-width: 850px), (pointer: coarse) {
   #output {
     font-size: 1.8rem; /* Further scaling for small screens */
     max-height: 75vh;
@@ -99,4 +99,4 @@ body {
   #title, #instructions {
     font-size: 0.7rem;
   }
-}
+} */
