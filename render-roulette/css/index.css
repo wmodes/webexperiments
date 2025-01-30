@@ -3,7 +3,6 @@ body {
   background-color: white;
   color: black;
   font-family: "Arial", sans-serif;
-  font-size: 3rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -11,8 +10,11 @@ body {
   text-align: center;
   cursor: pointer;
   margin: 0;
+  padding: 1rem; /* Prevents text from hitting edges */
+  box-sizing: border-box;
 }
 
+/* Title adjustments */
 #title, #title a {
   text-decoration: none;
   position: absolute;
@@ -21,20 +23,19 @@ body {
   padding: 0.25rem;
   font-size: 1rem;
   color: #ccc;
-  text-wrap-mode: nowrap;
+  white-space: nowrap;
 }
 
-
+/* Instructions */
 #instructions {
   position: absolute;
   bottom: 0;
-  /* centered horizontally */
   left: 50%;
   transform: translateX(-50%);
   padding: 1rem;
   font-size: 1rem;
-  color: #888;  
-  transition: all 1s ease-in; /* Smooth fade */
+  color: #888;
+  transition: all 1s ease-in;
 }
 
 #instructions:not(.show) {
@@ -44,17 +45,54 @@ body {
 /* Output container */
 #output {
   max-width: 80vw;
-  word-break: break-word;
+  max-height: 80vh; /* Prevents text from overflowing on short screens */
+  font-size: 3rem;
+  line-height: 1.2;
+  overflow-wrap: break-word;
 }
 
 /* Base state for prompt parts */
 .prompt-part {
   display: inline;
-  opacity: 0; /* Start hidden */
-  transition: all 1s ease-in; /* Smooth fade */
+  opacity: 0;
+  transition: all 1s ease-in;
 }
 
-/* When the class is added, the transition takes effect */
 .show {
   opacity: 1;
+}
+
+/* Responsive: Medium screens (tablets, landscape mobile) */
+@media (max-width: 1024px) {
+  #output {
+    font-size: 2.5rem;
+  }
+
+  #title, #instructions {
+    font-size: 0.875rem;
+  }
+}
+
+/* Responsive: Small screens (portrait mobile) */
+@media (max-width: 768px) {
+  #output {
+    font-size: 2rem;
+    max-width: 90vw; /* Prevents horizontal cut-off */
+  }
+
+  #title, #instructions {
+    font-size: 0.75rem;
+  }
+}
+
+/* Responsive: Wide but short screens (landscape mobile) */
+@media (max-width: 900px) and (max-height: 450px) {
+  #output {
+    font-size: 1.8rem; /* Scale down text for landscape */
+    max-height: 75vh;
+  }
+
+  #title, #instructions {
+    font-size: 0.7rem;
+  }
 }
