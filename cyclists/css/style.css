@@ -18,3 +18,27 @@ canvas {
   top: 0;
   left: 0;
 }
+
+#instructions {
+  position: absolute;
+  bottom: 25vh; /* ✅ Start at the bottom third of the screen */
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  font-weight: bold;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 24px;
+  font-family: sans-serif;
+  text-align: center;
+  opacity: 1;
+  animation: descendOut 15s ease-in-out 1s forwards; /* ✅ Waits 5s, then moves down over 10s */
+  z-index: 1;
+}
+
+@keyframes descendOut {
+  to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(200px); /* ✅ Moves down slowly */
+  }
+}
