@@ -109,7 +109,7 @@ function initializeTrees() {
   treesBelow = [];
   const ORIGINAL_HEIGHT = 720;
   const ORIGINAL_WIDTH = 960;
-  const ORIGINAL_TREE_COUNT = 100;
+  const ORIGINAL_TREE_COUNT = 200;
   const TREE_DENSITY = ORIGINAL_TREE_COUNT / ORIGINAL_WIDTH;
   
   treeBufferAbove.clear();
@@ -201,16 +201,11 @@ function updateCyclist(cyclist) {
   }
 }
 
-function drawCyclists() {
+// ✅ Fix: Use the cyclist’s stored emoji inside drawCyclist()
+function drawCyclist(cyclist) {
   textSize(50);
-  textAlign(CENTER, CENTER);
-
-  for (var i = 0; i < cyclists.length; i++) {
-    if (!cyclists[i].exploded) {
-      updateCyclist(cyclists[i]);
-      text(cyclists[i].emoji, cyclists[i].position, height / 2 + cyclists[i].yOffset);
-    }
-  }
+  fill(255, 0, 0);
+  text(cyclist.emoji, cyclist.position, height / 2 + cyclist.yOffset); // ✅ Uses cyclist's emoji
 }
 
 function drawExplosions() {
