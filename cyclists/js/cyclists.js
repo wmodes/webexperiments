@@ -11,6 +11,11 @@ let treeBufferAbove, treeBufferBelow; // Buffers for trees
 // Cyclist Stuff
 var cyclists = [];
 const cyclistEmoji = "🚴";
+const cyclistEmojis = [
+  "🚴", "🚴‍♀️", "🚴‍♂️", 
+  "🚴🏽", "🚴🏽‍♀️", "🚴🏽‍♂️", 
+  "🚴🏿", "🚴🏿‍♀️", "🚴🏿‍♂️"
+];
 var numCyclists = 5;
 var cyclistWidth = 50;
 var cyclistHeight = 50;
@@ -82,9 +87,9 @@ function windowResized() {
 	ghosts = [];
 }
 
-// Initialize cyclists with a small vertical offset
+// Initialize cyclists
 function initializeCyclists() {
-	cyclists = [];
+  cyclists = [];
   for (var i = 0; i < numCyclists; i++) {
     var cyclist = {
       position: random(width),
@@ -92,7 +97,8 @@ function initializeCyclists() {
       yOffset: random(-5, 5), // Random vertical offset
       exploded: false,
       explosionTime: 0,
-      skullSpawned: false
+      skullSpawned: false,
+      emoji: random(cyclistEmojis) // ✅ Assign a random emoji
     };
     cyclists.push(cyclist);
   }
@@ -195,11 +201,16 @@ function updateCyclist(cyclist) {
   }
 }
 
-// Draw cyclist with random vertical offset
-function drawCyclist(cyclist) {
+function drawCyclists() {
   textSize(50);
-  fill(255, 0, 0);
-  text(cyclistEmoji, cyclist.position, height / 2 + cyclist.yOffset);
+  textAlign(CENTER, CENTER);
+
+  for (var i = 0; i < cyclists.length; i++) {
+    if (!cyclists[i].exploded) {
+      updateCyclist(cyclists[i]);
+      text(cyclists[i].emoji, cyclists[i].position, height / 2 + cyclists[i].yOffset);
+    }
+  }
 }
 
 function drawExplosions() {
