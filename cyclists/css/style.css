@@ -32,13 +32,18 @@ canvas {
   font-family: sans-serif;
   text-align: center;
   opacity: 1;
-  animation: descendOut 15s ease-in-out 1s forwards; /* ✅ Waits 5s, then moves down over 10s */
+  animation: descendOut 15s ease-in-out forwards; /* ✅ No delay, smooth start */
   z-index: 1;
 }
 
 @keyframes descendOut {
+  from {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0); /* ✅ Start at the defined position */
+  }
   to {
     opacity: 0;
-    transform: translateX(-50%) translateY(200px); /* ✅ Moves down slowly */
+    transform: translateX(-50%) translateY(200px); /* ✅ Moves down smoothly */
   }
 }
+
