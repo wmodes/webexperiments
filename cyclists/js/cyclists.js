@@ -427,7 +427,8 @@ function isCyclistClicked(cyclist) {
 function respawnCyclist(cyclist) {
   cyclist.position = width + 50;
   cyclist.speed = min(cyclist.speed * 1.1, 10);
-  cyclist.yOffset = random(-5, 5); // New vertical offset
+  cyclist.yOffset = random(-5, 5); // ✅ New vertical offset
+  cyclist.emoji = random(cyclistEmojis); // ✅ New random emoji
   cyclist.exploded = false;
   cyclist.skullSpawned = false;
 }
