@@ -192,11 +192,14 @@ function drawCyclists() {
   }
 }
 
-// Update cyclist position
+// Update cyclist position and refresh emoji + vertical offset on wraparound
 function updateCyclist(cyclist) {
   cyclist.position -= cyclist.speed;
-  if (cyclist.position < -50) {
-    cyclist.position = width + 50;
+
+  if (cyclist.position < -50) { // ✅ If cyclist wraps around...
+    cyclist.position = width + 50; // Move to the right side
+    cyclist.yOffset = random(-5, 5); // ✅ New vertical offset
+    cyclist.emoji = random(cyclistEmojis); // ✅ New random emoji
   }
 }
 
