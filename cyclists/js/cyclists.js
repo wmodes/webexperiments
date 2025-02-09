@@ -12,7 +12,7 @@ let treeBufferAbove, treeBufferBelow; // Buffers for trees
 var cyclists = [];
 const cyclistEmoji = "🚴";
 const cyclistEmojis = [
-  "🚴", "🚴‍♀️", "🚴‍♂️", 
+  "🚴🏻", "🚴🏻‍♀️", "🚴🏻‍♂️", 
   "🚴🏽", "🚴🏽‍♀️", "🚴🏽‍♂️", 
   "🚴🏿", "🚴🏿‍♀️", "🚴🏿‍♂️"
 ];
