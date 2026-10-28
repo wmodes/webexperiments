@@ -36,6 +36,9 @@
  *   it and stays on the same dialogue (Copy, Share link).
  * - `vision`, true if the dialogue contains `#game-idea`: the vision is generated into it
  *   from `visit.seed` once the dialogue is shown.
+ * - `trance`, { next, beats }: the dialogue is not spoken but runs the Oracle's trance, then
+ *   shows dialogue `next`. `beats` (default 6) sets how long it lasts: 9 is the full trance
+ *   before the first vision, 21 the abbreviated one before "Another vision".
  * - `input`, a text field for the seeker to type into:
  *     { name, placeholder, submitLabel, maxLength, route }
  *   The typed text is stored in `visit[name]`, then `route(text)` returns the ID of the
@@ -175,14 +178,23 @@ var dialog = {
     ],
     destinations: [9],
   },
+  // The full trance, before the first vision
   9: {
-    speech: "<div class='ellipses'>...</div>",
+    trance: { next: 10 },
+    speech: "",
+    options: [],
+    destinations: [],
+  },
+  // The abbreviated trance, before "Another vision": half the beats
+  21: {
+    trance: { next: 10, beats: 3 },
+    speech: "",
     options: [],
     destinations: [],
   },
   10: {
     vision: true,
-    // Each showing is a new vision, so "Another vision" is just this dialogue again
+    // Each showing is a new vision, so "Another vision" is this dialogue again (after a short trance)
     onShow: (visit) => {
       visit.seed = randomSeed();
     },
@@ -193,7 +205,7 @@ var dialog = {
         "Share link.",
         "Start over."
     ],
-    destinations: [10, copyVision, shareVision, 1],
+    destinations: [21, copyVision, shareVision, 1],
   },
 
   // A vision shared by link: shown straight away, with a way into the ritual
@@ -411,13 +423,14 @@ function showSpeech(n) {
   if (isTransitioning) return;
   isTransitioning = true;
 
-  // Special case for dialogue 9 (trance effect)
-  if (n === 9) {
-    trance(10); // Call trance and pass the next dialogue ID
-    return; // Exit early for special case
+  var entry = dialog[n];
+
+  // A trance dialogue has no speech of its own: it runs the trance, then moves on
+  if (entry.trance) {
+    trance(entry.trance.next, entry.trance.beats);
+    return;
   }
 
-  var entry = dialog[n];
   // A dialogue may prepare `visit` first (e.g. draw the offerings to choose among)
   if (entry.onShow) entry.onShow(visit);
   // Speech and options may be functions of the visit so far, so they can quote the seeker
@@ -507,10 +520,11 @@ var TRANCE_BEAT_MS = 1200;
  * the stylesheet) while a line of ellipses grows, shown as a caption since it is the world
  * speaking, not the Oracle. Then it moves on to the next dialogue as the light returns.
  * @param {number} nextDialogId - The ID of the dialogue to transition to after the trance.
+ * @param {number} [beats=6] - How many beats it lasts (TRANCE_BEAT_MS each, one dot per beat).
  */
-function trance(nextDialogId) {
-  var maxDots = 9;
+function trance(nextDialogId, beats) {
   var currentDots = 3;
+  var maxDots = currentDots + (beats || 6);
 
   $("#content").addClass("trancing");
 
