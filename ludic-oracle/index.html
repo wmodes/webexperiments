@@ -1,4 +1,5 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
 
     <title>The Ludic Oracle - A Vision of Experimental Games</title>
@@ -32,19 +33,33 @@
 
     <link rel="stylesheet" type="text/css" href="css/style.css">
     <!-- load jquery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <!-- load tracery -->
-    <script src="https://cdn.jsdelivr.net/gh/galaxykate/tracery@master/tracery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <!-- load tracery-improved (Tracery that cycles through all of a symbol's rules before repeating one),
+         bundled in js/ so the Oracle stands alone -->
+    <script src="js/tracery.js"></script>
     <!-- load tracery grammar -->
     <script src="js/grammar.js"></script>
+    <!-- load the offerings, the answers' keywords, and the weighter that tilts the grammar by them -->
+    <script src="js/offerings.js"></script>
+    <script src="js/answers.js"></script>
+    <script src="js/grammar-weighter.js"></script>
+    <!-- load seeded random numbers, so a share link can reproduce a vision -->
+    <script src="js/seeded-random.js"></script>
     <!-- load custom js -->
     <script src="js/ludic-oracle.js"></script>
   
 </head>
 <body>
     <main id="content">
-        <div class="bubble-wrapper">
-            <div class="speech-bubble">
+        <!-- The trance: the temple dims and the halo glows (see #content.trancing in the stylesheet) -->
+        <div id="trance-dim"></div>
+        <div id="trance-glow"></div>
+
+        <!-- Hidden until the first speech fades in, so no empty bubble flashes on load.
+             Inline (not in the stylesheet) so jQuery's fadeIn restores the flex layout. -->
+        <div class="bubble-wrapper" style="display: none;">
+            <!-- aria-live: screen readers announce each new speech -->
+            <div class="speech-bubble" aria-live="polite">
             </div>
         </div>
 

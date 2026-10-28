@@ -10,7 +10,7 @@ html, body {
     background-color: #fff;  
     font-family: "Cinzel", serif;
     font-optical-sizing: auto;
-    font-weight: <weight>;
+    font-weight: 400;
     font-style: normal;
 }
 
@@ -40,7 +40,57 @@ html, body {
   align-items: flex-start; /* Align bubble at the top of the wrapper */
   max-width: 80%; /* Constrain width */
   max-height: calc(100vh - 55% - 4em); /* Constrain wrapper height */
-  visbility: hidden;
+  z-index: 3; /* Above the trance's dimming (1) and glow (2) */
+}
+
+/* The trance. While the Oracle is in trance (#content.trancing) the temple dims and a soft
+   glow breathes over the statue's halo. The halo is part of the background painting, so the
+   glow is positioned from the painting's own geometry: 1920x1024, scaled with background-size
+   "cover", so one painting pixel is --px. The halo's centre is at about (958, 420). */
+#trance-dim,
+#trance-glow {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.8s ease; /* Fades in with the dots, out as the vision arrives */
+}
+
+#trance-dim {
+  inset: 0;
+  z-index: 1;
+  background: rgba(0, 0, 0, 0.62);
+}
+
+#trance-glow {
+  --px: max(100vw / 1920, 100vh / 1024);
+  z-index: 2;
+  left: calc(50% - 2 * var(--px));  /* halo centre x: 958 of 1920, the painting's centre is 960 */
+  top: calc(50% - 92 * var(--px));  /* halo centre y: 420 of 1024, the painting's centre is 512 */
+  width: calc(440 * var(--px));
+  height: calc(440 * var(--px));
+  /* Peak kept well below white, so the glow lights the face instead of washing it out */
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.62) 0%, rgba(255, 255, 255, 0.38) 30%, rgba(255, 255, 255, 0) 68%);
+  /* Always breathing, invisible until the trance: so it never pops when the trance ends.
+     2.4s is two beats of the dots (see TRANCE_BEAT_MS in the script). */
+  animation: halo-breath 2.4s ease-in-out infinite;
+}
+
+@keyframes halo-breath {
+  0%, 100% { transform: translate(-50%, -50%) scale(0.85); }
+  50%      { transform: translate(-50%, -50%) scale(1.15); }
+}
+
+#content.trancing #trance-dim,
+#content.trancing #trance-glow {
+  opacity: 1;
+}
+
+/* For visitors who ask their device to avoid motion: a steady glow, no breathing */
+@media (prefers-reduced-motion: reduce) {
+  #trance-glow {
+    animation: none;
+    transform: translate(-50%, -50%);
+  }
 }
 
 .speech-bubble {
@@ -74,6 +124,33 @@ html, body {
   z-index: 1; /* Ensure the tail is visible above other content */
 }
 
+/* Narration: the world speaking, not the Oracle. A caption low in the scene, with no
+   tail pointing at the statue, so it can't be mistaken for the Oracle's speech. */
+.bubble-wrapper.narration {
+  top: auto;
+  bottom: 2.5em;
+  width: min(92%, 40em); /* A wide, low caption; shrink-wrapping makes a tall column on phones */
+  max-width: 92%;
+}
+
+.bubble-wrapper.narration .speech-bubble {
+  box-sizing: border-box; /* So width 100% includes the padding */
+  width: 100%;
+}
+
+.bubble-wrapper.narration:before {
+  display: none; /* No tail */
+}
+
+.bubble-wrapper.narration .speech-bubble {
+  border-radius: 0.3em;
+  background: rgba(18, 16, 14, 0.82);
+  color: #f3ece0;
+  font-style: italic;
+  border: 1px solid rgba(243, 236, 224, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .speech-bubble {
@@ -89,6 +166,45 @@ html, body {
   }
 }
 
+/* Phones: the wrapper is absolutely positioned from left: 50%, so left to itself it shrinks to
+   a narrow column, and its height stops at the bottom edge, which hides the buttons of a long
+   speech (a vision with four buttons) inside a scroll area. Give it the width of the screen and
+   start it higher, over the statue's body, so the whole speech and its buttons are in view. */
+@media (max-width: 768px), (orientation: portrait) {
+  .bubble-wrapper {
+    top: 34%;
+    width: 94%;
+    max-width: 94%;
+    max-height: calc(100vh - 34% - 1em);
+  }
+
+  .speech-bubble {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 1.2em 1.4em;
+    font-size: 90%;
+  }
+}
+
+/* Text field for the seeker's tribute; reads as an inscription line, not a web form */
+#input-form input {
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0.5em 0 0.6em;
+  padding: 0.3em 0.2em;
+  border: none;
+  border-bottom: 2px solid #333;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  text-align: center;
+  outline: none;
+}
+
+#input-form input:focus {
+  border-bottom-color: #000;
+}
+
 .button-box {
   display: flex; /* Use flexbox */
   width: 100%; /* Take the full width for alignment */
@@ -97,6 +213,8 @@ html, body {
 
   justify-content: space-between; /* Space items evenly */
   align-items: center; /* Align vertically if needed */
+  gap: 10px; /* Keeps long choices from running together */
+  flex-wrap: wrap; /* Choices that can't share a row (e.g. on a phone) stack instead of clipping */
 }
 
 .button-box:has(:only-child) {
@@ -113,6 +231,12 @@ html, body {
 
 .button-box button:hover {
   font-weight: 600; /* Optional: Remove underline on hover for effect */
+}
+
+/* `all: unset` strips the browser's focus ring, so restore one for keyboard users */
+.button-box button:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
 }
 
 .ellipses {
